@@ -1,0 +1,104 @@
+[
+  {
+    "id": 1,
+    "start": 2.0,
+    "end": 6.0,
+    "text": "唔该，杯冻奶茶等咗好耐喇。",
+    "cantonese": "唔该，杯冻奶茶等咗好耐喇。",
+    "jyutping": "m4 goi1, bui1 dung3 naai5 caa4 dang2 zo2 hou2 noi6 laa3.",
+    "mandarin": "麻烦你，我这杯冰奶茶等很久了。",
+    "english": "Excuse me, I have been waiting a long time for this iced milk tea.",
+    "translation": "Excuse me, I have been waiting a long time for this iced milk tea.",
+    "tone": "催促 / 不耐烦",
+    "scene": "茶餐厅催单",
+    "notes": [
+      { "word": "唔该", "meaning": "麻烦你 / 劳驾", "type": "礼貌开场" },
+      { "word": "等咗好耐", "meaning": "等了很久", "type": "常用抱怨" }
+    ]
+  },
+  {
+    "id": 2,
+    "start": 6.5,
+    "end": 10.0,
+    "text": "先生，马上嚟，啱啱出紧。",
+    "cantonese": "先生，马上嚟，啱啱出紧。",
+    "jyutping": "sin1 saang1, maa5 soeng6 lai4, ngaam1 ngaam1 ceot1 gan2.",
+    "mandarin": "先生，马上来，刚刚正在做。",
+    "english": "Sir, it is coming right away. It is being prepared now.",
+    "translation": "Sir, it is coming right away. It is being prepared now.",
+    "tone": "安抚 / 解释",
+    "scene": "服务员回应",
+    "notes": [
+      { "word": "马上嚟", "meaning": "马上来", "type": "服务场景" },
+      { "word": "出紧", "meaning": "正在出餐 / 正在做", "type": "进行中" }
+    ]
+  },
+  {
+    "id": 3,
+    "start": 10.5,
+    "end": 14.0,
+    "text": "你哋次次都系咁讲㗎喎。",
+    "cantonese": "你哋次次都系咁讲㗎喎。",
+    "jyutping": "nei5 dei6 ci3 ci3 dou1 hai6 gam2 gong2 gaa3 wo3.",
+    "mandarin": "你们每次都是这样说的。",
+    "english": "You say that every time.",
+    "translation": "You say that every time.",
+    "tone": "抱怨 / 质疑",
+    "scene": "顾客顶嘴",
+    "notes": [
+      { "word": "你哋", "meaning": "你们", "type": "人称代词" },
+      { "word": "㗎喎", "meaning": "句尾语气，带提醒或质疑", "type": "语气词" }
+    ]
+  },
+  {
+    "id": 4,
+    "start": 14.5,
+    "end": 18.2,
+    "text": "唔好意思，今日厨房真系好忙。",
+    "cantonese": "唔好意思，今日厨房真系好忙。",
+    "jyutping": "m4 hou2 ji3 si1, gam1 jat6 cyu4 fong2 zan1 hai6 hou2 mong4.",
+    "mandarin": "不好意思，今天厨房真的很忙。",
+    "english": "Sorry, the kitchen is really busy today.",
+    "translation": "Sorry, the kitchen is really busy today.",
+    "tone": "道歉 / 缓和",
+    "scene": "服务员解释",
+    "notes": [
+      { "word": "唔好意思", "meaning": "不好意思 / 抱歉", "type": "缓和语气" },
+      { "word": "真系", "meaning": "真的", "type": "强调" }
+    ]
+  },
+  {
+    "id": 5,
+    "start": 19.0,
+    "end": 23.0,
+    "text": "得啦得啦，快啲得唔得呀？",
+    "cantonese": "得啦得啦，快啲得唔得呀？",
+    "jyutping": "dak1 laa1 dak1 laa1, faai3 di1 dak1 m4 dak1 aa3?",
+    "mandarin": "好了好了，快一点行不行？",
+    "english": "Fine, fine. Can you hurry up a bit?",
+    "translation": "Fine, fine. Can you hurry up a bit?",
+    "tone": "不耐烦 / 催促",
+    "scene": "顾客施压",
+    "notes": [
+      { "word": "得啦得啦", "meaning": "好了好了", "type": "打断或不耐烦" },
+      { "word": "快啲", "meaning": "快一点", "type": "催促" }
+    ]
+  },
+  {
+    "id": 6,
+    "start": 23.5,
+    "end": 27.5,
+    "text": "得，我帮你催一催。",
+    "cantonese": "得，我帮你催一催。",
+    "jyutping": "dak1, ngo5 bong1 nei5 ceoi1 jat1 ceoi1.",
+    "mandarin": "行，我帮你催一下。",
+    "english": "Alright, I will chase it up for you.",
+    "translation": "Alright, I will chase it up for you.",
+    "tone": "答应 / 收尾",
+    "scene": "服务员处理",
+    "notes": [
+      { "word": "得", "meaning": "行 / 可以", "type": "回应" },
+      { "word": "催一催", "meaning": "催一下", "type": "处理问题" }
+    ]
+  }
+]

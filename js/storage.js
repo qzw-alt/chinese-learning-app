@@ -142,7 +142,7 @@ const Storage = {
   // ---------- Settings ----------
   getSettings() {
     return this.get('settings', {
-      preferredLanguage: 'mandarin',
+      preferredLanguage: 'cantonese',
       autoPlayAudio: true,
     });
   },

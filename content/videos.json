@@ -1,15 +1,16 @@
 [
   {
-    "id": "buy-flowers",
+    "id": "hk-cafe-rush",
     "source": "youtube",
     "sourceId": "SGS8sfH11yg",
     "sourceUrl": null,
-    "title": "买花 — Real Chinese Conversation",
-    "subtitle_cn": "实用中文：买花场景",
-    "duration": "5:33",
+    "title": "茶餐厅催单 — 港片场景对白",
+    "subtitle_cn": "粤语场景：不耐烦、催促、回应",
+    "duration": "2:00",
     "difficulty": "beginner",
-    "language": "mandarin",
-    "description": "在花店买花的日常对话。学习问候、颜色、数字、价格等基础词汇，适合零基础学习者。",
+    "language": "cantonese",
+    "scene": "茶餐厅",
+    "description": "用一段港片式茶餐厅对白练习催促、解释和缓和语气。视频源之后可替换为真实 2 分钟片段。",
     "thumbnail": null
   },
   {

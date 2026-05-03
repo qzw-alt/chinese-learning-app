@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ChineseFlix — 看电影学中文</title>
+  <title>ChineseFlix — 用港片对白学粤语</title>
   <link rel="stylesheet" href="css/style.css">
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
@@ -13,7 +13,7 @@
   <header class="app-header">
     <span class="logo">🎬 ChineseFlix</span>
     <div style="flex:1"></div>
-    <div x-data="{ lang: Storage.getSettings().preferredLanguage || 'mandarin' }" class="lang-selector">
+    <div x-data="{ lang: Storage.getSettings().preferredLanguage || 'cantonese' }" class="lang-selector">
       <button class="lang-option" :class="{ active: lang === 'mandarin' }"
         @click="lang = 'mandarin'; Storage.saveSettings({ preferredLanguage: 'mandarin' }); $dispatch('lang-change', 'mandarin')">普通话</button>
       <button class="lang-option" :class="{ active: lang === 'cantonese' }"
@@ -27,8 +27,8 @@
     <!-- Hero Banner -->
     <div class="hero-banner">
       <div class="hero-text">
-        <div class="hero-title">看电影，学中文</div>
-        <div class="hero-subtitle">Learn Chinese through real conversations</div>
+        <div class="hero-title">用港片对白学粤语</div>
+        <div class="hero-subtitle">逐句听懂、跟读、收藏地道表达</div>
       </div>
       <div class="hero-stats">
         <div class="hero-stat" x-text="stats.total + ' 个视频'"></div>

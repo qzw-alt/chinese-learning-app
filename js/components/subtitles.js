@@ -9,7 +9,7 @@
  * @returns {Object} subtitle controller
  */
 function createSubtitles(options) {
-  const { containerId, subtitles, playerCtrl, language = 'mandarin' } = options;
+  const { containerId, subtitles, playerCtrl, language = 'mandarin', onActiveChange } = options;
   const container = document.getElementById(containerId);
   if (!container) return null;
 
@@ -26,10 +26,10 @@ function createSubtitles(options) {
         <span class="sub-num">${sub.id}</span>
         <div class="sub-content">
           <div class="sub-text" data-sub-id="${sub.id}">
-            ${makeCharsClickable(sub.text, sub.id)}
+            ${makeCharsClickable(sub.cantonese || sub.text, sub.id)}
           </div>
           ${sub[romanizeKey] ? `<div class="sub-romanization">${sub[romanizeKey]}</div>` : ''}
-          <div class="sub-translation">${sub.translation}</div>
+          <div class="sub-translation">${sub.mandarin || sub.translation}</div>
         </div>
         <div class="sub-actions">
           <button class="btn-speak" data-speak-id="${sub.id}">🎤 跟读</button>
@@ -78,6 +78,7 @@ function createSubtitles(options) {
       }
     }
     currentSubId = foundId;
+    if (onActiveChange) onActiveChange(found || null);
   }
 
   function getActiveSubtitle() {

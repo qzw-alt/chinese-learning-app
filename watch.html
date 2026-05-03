@@ -44,19 +44,52 @@
         <div id="player"></div>
       </div>
 
-      <!-- Language & Speed Controls -->
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:8px 0;">
-        <span class="tag" :class="'tag-' + video.language" x-text="video.language === 'cantonese' ? '粤语' : '普通话'"></span>
-        <div class="speed-control" id="speedControl">
-          <span class="speed-label">语速</span>
-          <button class="speed-btn active" data-rate="0.75">0.75x</button>
-          <button class="speed-btn" data-rate="1">1x</button>
-          <button class="speed-btn" data-rate="1.25">1.25x</button>
+      <!-- Active line learning panel -->
+      <section class="line-study-panel" x-show="activeSub">
+        <div class="line-study-meta">
+          <span class="tag" :class="'tag-' + video.language">粤语主课</span>
+          <span x-text="video.scene || activeSub?.scene || '港片场景'"></span>
+          <span x-show="activeSub?.tone" x-text="activeSub?.tone"></span>
         </div>
-      </div>
+
+        <div class="line-cantonese" x-text="activeSub?.cantonese || activeSub?.text"></div>
+        <div class="line-jyutping" x-text="activeSub?.jyutping"></div>
+        <div class="line-meaning">
+          <div>
+            <span>普通话</span>
+            <strong x-text="activeSub?.mandarin || activeSub?.translation"></strong>
+          </div>
+          <div>
+            <span>English</span>
+            <strong x-text="activeSub?.english || activeSub?.translation"></strong>
+          </div>
+        </div>
+
+        <div class="expression-notes" x-show="activeSub?.notes?.length">
+          <template x-for="note in activeSub?.notes || []" :key="note.word">
+            <button class="expression-chip" @click="saveExpression(note)">
+              <span x-text="note.word"></span>
+              <small x-text="note.meaning"></small>
+            </button>
+          </template>
+        </div>
+
+        <div class="line-actions">
+          <button class="btn btn-secondary" @click="playActiveClip">重播本句</button>
+          <button class="btn btn-outline" @click="setClipSpeed(0.75)">慢速</button>
+          <button class="btn btn-primary" @click="openSpeak(activeSub)">跟读</button>
+          <button class="btn btn-secondary" @click="saveActiveLine">收藏整句</button>
+        </div>
+
+        <div class="line-nav">
+          <button class="btn btn-sm btn-outline" @click="jumpRelative(-1)">上一句</button>
+          <span x-text="(activeIndex + 1) + ' / ' + subtitles.length"></span>
+          <button class="btn btn-sm btn-outline" @click="jumpRelative(1)">下一句</button>
+        </div>
+      </section>
 
       <!-- Subtitle List -->
-      <div class="section-title">📝 字幕</div>
+      <div class="section-title">全部台词</div>
       <div class="subtitle-list" id="subtitleList"></div>
 
       <!-- Check-in -->
@@ -89,19 +122,23 @@
         error: '',
         playerCtrl: null,
         subtitleMgr: null,
+        activeSub: null,
+        activeIndex: 0,
 
         async init() {
           const params = new URLSearchParams(window.location.search);
           const videoId = params.get('id');
           if (!videoId) { this.error = '未指定视频ID'; this.loading = false; return; }
 
-          const v = getVideoById(videoId);
+          const videoList = await loadVideos();
+          const v = videoList.find(item => item.id === videoId) || getVideoById(videoId);
           if (!v) { this.error = '视频未找到'; this.loading = false; return; }
           this.video = v;
 
           const subs = await loadSubtitles(videoId);
           if (!subs.length) { this.error = '暂无字幕'; this.loading = false; return; }
           this.subtitles = subs;
+          this.activeSub = subs[0] || null;
 
           document.title = v.title + ' — ChineseFlix';
           document.getElementById('videoTitle').textContent = v.title;
@@ -121,6 +158,7 @@
               subtitles: subs,
               playerCtrl: this.playerCtrl,
               language: v.language,
+              onActiveChange: (sub) => this.setActiveSub(sub),
             });
 
             // Bind click events
@@ -136,6 +174,9 @@
               const line = e.target.closest('.subtitle-line');
               if (line && this.playerCtrl) {
                 const start = parseFloat(line.dataset.start);
+                const subId = parseInt(line.dataset.subId);
+                const sub = subs.find(s => s.id === subId);
+                if (sub) this.setActiveSub(sub);
                 if (!isNaN(start)) {
                   this.playerCtrl.seek(start);
                   this.playerCtrl.play();
@@ -148,15 +189,55 @@
               }
             });
 
-            // Speed control
-            document.getElementById('speedControl').addEventListener('click', (e) => {
-              const btn = e.target.closest('.speed-btn');
-              if (!btn) return;
-              document.querySelectorAll('#speedControl .speed-btn').forEach(b => b.classList.remove('active'));
-              btn.classList.add('active');
-              this.playerCtrl?.setSpeed(parseFloat(btn.dataset.rate));
-            });
           });
+        },
+
+        setActiveSub(sub) {
+          if (!sub) return;
+          this.activeSub = sub;
+          this.activeIndex = this.subtitles.findIndex(s => s.id === sub.id);
+        },
+
+        playActiveClip() {
+          if (!this.activeSub) return;
+          playClip(this.playerCtrl, this.activeSub.start, this.activeSub.end);
+        },
+
+        setClipSpeed(rate) {
+          this.playerCtrl?.setSpeed(rate);
+          this.playActiveClip();
+        },
+
+        jumpRelative(delta) {
+          const nextIndex = Math.min(Math.max(this.activeIndex + delta, 0), this.subtitles.length - 1);
+          const next = this.subtitles[nextIndex];
+          if (!next) return;
+          this.setActiveSub(next);
+          this.playerCtrl?.seek(next.start);
+          this.playerCtrl?.play();
+        },
+
+        saveExpression(note) {
+          if (!note || !this.activeSub) return;
+          Storage.addVocabWord(note.word, {
+            romanization: this.activeSub.jyutping || '',
+            pos: note.type || '表达',
+            meaning: note.meaning || '',
+            language: this.video.language,
+          }, `${this.video.title} #${this.activeSub.id}`);
+          showToast(`已收藏「${note.word}」`);
+        },
+
+        saveActiveLine() {
+          if (!this.activeSub) return;
+          const text = this.activeSub.cantonese || this.activeSub.text;
+          Storage.addVocabWord(text, {
+            romanization: this.activeSub.jyutping || '',
+            pos: '整句表达',
+            meaning: this.activeSub.mandarin || this.activeSub.translation || '',
+            language: this.video.language,
+          }, `${this.video.title} #${this.activeSub.id}`);
+          showToast('已收藏整句表达');
         },
 
         openSpeak(sub) {
@@ -166,8 +247,8 @@
               <div class="modal">
                 <button class="modal-close" id="speakClose">✕</button>
                 <div class="modal-title">🎤 跟读练习</div>
-                <div class="speak-sentence">${sub.text}</div>
-                <div style="text-align:center;margin-bottom:16px;color:var(--text-secondary);">${sub.translation}</div>
+                <div class="speak-sentence">${sub.cantonese || sub.text}</div>
+                <div style="text-align:center;margin-bottom:16px;color:var(--text-secondary);">${sub.mandarin || sub.translation}</div>
                 <div class="speak-controls">
                   <button class="btn btn-outline btn-lg" id="playOrigBtn">🔊 播放原声</button>
                   <button class="btn btn-primary btn-lg" id="startRecBtn">🎙️ 开始录音</button>

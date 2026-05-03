@@ -13,7 +13,7 @@
   <header class="app-header">
     <span class="logo">🎬 ChineseFlix</span>
     <div style="flex:1"></div>
-    <div x-data="{ lang: Storage.getSettings().preferredLanguage }" class="lang-selector">
+    <div x-data="{ lang: Storage.getSettings().preferredLanguage || 'mandarin' }" class="lang-selector">
       <button class="lang-option" :class="{ active: lang === 'mandarin' }"
         @click="lang = 'mandarin'; Storage.saveSettings({ preferredLanguage: 'mandarin' }); $dispatch('lang-change', 'mandarin')">普通话</button>
       <button class="lang-option" :class="{ active: lang === 'cantonese' }"
@@ -24,35 +24,75 @@
   <!-- Main Content -->
   <div class="page-container" x-data="homePage()" x-init="init()">
 
-    <!-- Filter Bar -->
-    <div class="filter-bar">
-      <button class="filter-btn" :class="{ active: filter === 'all' }" @click="filter = 'all'">全部</button>
-      <button class="filter-btn" :class="{ active: filter === 'mandarin' }" @click="filter = 'mandarin'">普通话</button>
-      <button class="filter-btn" :class="{ active: filter === 'cantonese' }" @click="filter = 'cantonese'">粤语</button>
-      <button class="filter-btn" :class="{ active: filter === 'beginner' }" @click="filter = 'beginner'">初级</button>
-      <button class="filter-btn" :class="{ active: filter === 'intermediate' }" @click="filter = 'intermediate'">中级</button>
-      <button class="filter-btn" :class="{ active: filter === 'advanced' }" @click="filter = 'advanced'">高级</button>
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+      <div class="hero-text">
+        <div class="hero-title">看电影，学中文</div>
+        <div class="hero-subtitle">Learn Chinese through real conversations</div>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat" x-text="stats.total + ' 个视频'"></div>
+        <div class="hero-stat" x-text="stats.languages"></div>
+        <div class="hero-stat" x-text="stats.levels + ' 个级别'"></div>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-row">
+      <input type="text" class="search-box" x-model="searchQuery" placeholder="搜索视频标题、描述...">
+    </div>
+
+    <!-- Filter Bar: Language -->
+    <div class="filter-section">
+      <span class="filter-label">语言</span>
+      <div class="filter-bar">
+        <button class="filter-btn" :class="{ active: langFilter === 'all' }" @click="langFilter = 'all'">全部</button>
+        <button class="filter-btn" :class="{ active: langFilter === 'mandarin' }" @click="langFilter = 'mandarin'">普通话</button>
+        <button class="filter-btn" :class="{ active: langFilter === 'cantonese' }" @click="langFilter = 'cantonese'">粤语</button>
+      </div>
+    </div>
+
+    <!-- Filter Bar: Difficulty -->
+    <div class="filter-section">
+      <span class="filter-label">难度</span>
+      <div class="filter-bar">
+        <button class="filter-btn" :class="{ active: diffFilter === 'all' }" @click="diffFilter = 'all'">全部</button>
+        <button class="filter-btn" :class="{ active: diffFilter === 'beginner' }" @click="diffFilter = 'beginner'">初级</button>
+        <button class="filter-btn" :class="{ active: diffFilter === 'intermediate' }" @click="diffFilter = 'intermediate'">中级</button>
+        <button class="filter-btn" :class="{ active: diffFilter === 'advanced' }" @click="diffFilter = 'advanced'">高级</button>
+      </div>
+    </div>
+
+    <!-- Result Summary -->
+    <div class="result-summary" x-show="!loading">
+      <span x-text="resultText"></span>
+      <button x-show="langFilter !== 'all' || diffFilter !== 'all' || searchQuery" class="btn btn-sm btn-outline" @click="clearFilters()">清除筛选</button>
     </div>
 
     <!-- Loading -->
     <div x-show="loading" x-html="renderSpinner('加载视频中...')"></div>
 
     <!-- Empty -->
-    <div x-show="!loading && filtered.length === 0" x-html="renderEmptyState('📭', '暂无视频', '更多视频即将上线')"></div>
+    <div x-show="!loading && filtered.length === 0" x-html="renderEmptyState('📭', '没有找到匹配的视频', '试试调整筛选条件')"></div>
 
     <!-- Video Grid -->
     <div class="video-grid" x-show="!loading && filtered.length > 0">
       <template x-for="v in filtered" :key="v.id">
-        <div class="card" @click="goTo('watch.html?id=' + v.id)">
-          <img class="card-img"
-            :src="v.thumbnail || 'https://img.youtube.com/vi/' + v.sourceId + '/hqdefault.jpg'"
-            :alt="v.title" loading="lazy">
+        <div class="card video-card" @click="goTo('watch.html?id=' + v.id)">
+          <div class="card-img-wrapper">
+            <img class="card-img"
+              :src="v.thumbnail || 'https://img.youtube.com/vi/' + v.sourceId + '/hqdefault.jpg'"
+              :alt="v.title" loading="lazy"
+              @error="v.thumbnail = null; $el.src = ''; $el.parentElement.classList.add('no-thumb')">
+            <div class="card-img-tag tag" :class="'tag-' + v.language" x-text="v.language === 'cantonese' ? '粤' : '普'"></div>
+            <div class="card-duration" x-text="v.duration"></div>
+          </div>
           <div class="card-body">
             <div class="card-title" x-text="v.title"></div>
+            <div class="card-desc" x-text="v.description"></div>
             <div class="card-meta">
-              <span x-text="v.duration"></span>
               <span class="tag" :class="'tag-' + v.difficulty" x-text="diffLabel(v.difficulty)"></span>
-              <span class="tag" :class="'tag-' + v.language" x-text="v.language === 'cantonese' ? '粤语' : '普通话'"></span>
+              <span x-text="v.subtitle_cn"></span>
             </div>
           </div>
         </div>
@@ -87,7 +127,9 @@
     function homePage() {
       return {
         videos: [],
-        filter: 'all',
+        searchQuery: '',
+        langFilter: 'all',
+        diffFilter: 'all',
         loading: true,
 
         async init() {
@@ -97,16 +139,53 @@
         },
 
         get filtered() {
-          if (this.filter === 'all') return this.videos;
-          if (['mandarin', 'cantonese'].includes(this.filter)) {
-            return this.videos.filter(v => v.language === this.filter);
+          let list = this.videos;
+          if (this.langFilter !== 'all') {
+            list = list.filter(v => v.language === this.langFilter);
           }
-          return this.videos.filter(v => v.difficulty === this.filter);
+          if (this.diffFilter !== 'all') {
+            list = list.filter(v => v.difficulty === this.diffFilter);
+          }
+          if (this.searchQuery) {
+            const q = this.searchQuery.toLowerCase();
+            list = list.filter(v =>
+              v.title.toLowerCase().includes(q) ||
+              (v.description || '').toLowerCase().includes(q) ||
+              (v.subtitle_cn || '').toLowerCase().includes(q)
+            );
+          }
+          return list;
+        },
+
+        get stats() {
+          const total = this.videos.length;
+          const mandarin = this.videos.filter(v => v.language === 'mandarin').length;
+          const cantonese = this.videos.filter(v => v.language === 'cantonese').length;
+          const levels = new Set(this.videos.map(v => v.difficulty)).size;
+          const langParts = [];
+          if (mandarin) langParts.push(mandarin + ' 普通话');
+          if (cantonese) langParts.push(cantonese + ' 粤语');
+          return { total, languages: langParts.join(' · '), levels };
+        },
+
+        get resultText() {
+          const total = this.videos.length;
+          const showing = this.filtered.length;
+          if (this.langFilter === 'all' && this.diffFilter === 'all' && !this.searchQuery) {
+            return `共 ${total} 个视频`;
+          }
+          return `找到 ${showing} 个视频（共 ${total} 个）`;
         },
 
         diffLabel(d) {
           const map = { beginner: '初级', intermediate: '中级', advanced: '高级' };
           return map[d] || d;
+        },
+
+        clearFilters() {
+          this.searchQuery = '';
+          this.langFilter = 'all';
+          this.diffFilter = 'all';
         },
       };
     }

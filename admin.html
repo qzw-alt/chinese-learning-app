@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>后台管理 — ChineseFlix</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3/dist/index.js"></script>
+</head>
+<body>
+
+  <header class="app-header">
+    <a class="back-btn" href="index.html">← 返回</a>
+    <span class="header-title">后台管理</span>
+    <div style="flex:1"></div>
+  </header>
+
+  <div class="page-container" x-data="adminPage()" x-init="init()">
+
+    <!-- Tabs -->
+    <div class="filter-bar" style="margin-bottom:16px;">
+      <button class="filter-btn" :class="{ active: tab === 'add' }" @click="tab = 'add'">添加视频</button>
+      <button class="filter-btn" :class="{ active: tab === 'list' }" @click="tab = 'list'">视频列表</button>
+    </div>
+
+    <!-- Add Video Tab -->
+    <div x-show="tab === 'add'">
+      <div class="card" style="padding:16px;margin-bottom:16px;">
+        <div class="section-title">视频来源</div>
+
+        <div class="form-group">
+          <label class="form-label">视频 URL</label>
+          <input type="text" class="form-input" x-model="form.url"
+            placeholder="粘贴 YouTube 或 COS MP4 链接" @blur="parseUrl()">
+          <div class="form-hint" x-show="form.parsedType" x-text="'检测到: ' + form.parsedType"></div>
+        </div>
+
+        <div class="form-group" x-show="form.source === 'youtube'">
+          <label class="form-label">YouTube Video ID</label>
+          <input type="text" class="form-input" x-model="form.sourceId" readonly>
+        </div>
+
+        <div class="form-group" x-show="form.source === 'mp4'">
+          <label class="form-label">MP4 直链 URL</label>
+          <input type="text" class="form-input" x-model="form.sourceUrl" readonly>
+        </div>
+      </div>
+
+      <div class="card" style="padding:16px;margin-bottom:16px;">
+        <div class="section-title">视频信息</div>
+
+        <div class="form-group">
+          <label class="form-label">视频 ID <small>(唯一标识，英文/数字/横线)</small></label>
+          <input type="text" class="form-input" x-model="form.id" placeholder="例如: buy-flowers">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">标题</label>
+          <input type="text" class="form-input" x-model="form.title" placeholder="视频标题">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">描述</label>
+          <textarea class="form-input" x-model="form.description" rows="3" placeholder="视频描述..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">时长 <small>(如 5:33)</small></label>
+          <input type="text" class="form-input" x-model="form.duration" placeholder="5:33">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">语言</label>
+          <div class="filter-bar">
+            <button class="filter-btn" :class="{ active: form.language === 'mandarin' }" @click="form.language = 'mandarin'">普通话</button>
+            <button class="filter-btn" :class="{ active: form.language === 'cantonese' }" @click="form.language = 'cantonese'">粤语</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">难度</label>
+          <div class="filter-bar">
+            <button class="filter-btn" :class="{ active: form.difficulty === 'beginner' }" @click="form.difficulty = 'beginner'">初级</button>
+            <button class="filter-btn" :class="{ active: form.difficulty === 'intermediate' }" @click="form.difficulty = 'intermediate'">中级</button>
+            <button class="filter-btn" :class="{ active: form.difficulty === 'advanced' }" @click="form.difficulty = 'advanced'">高级</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">场景标签</label>
+          <input type="text" class="form-input" x-model="form.scene" placeholder="例如: 茶餐厅、医院、购物">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">副标题 <small>(简短分类描述)</small></label>
+          <input type="text" class="form-input" x-model="form.subtitle_cn" placeholder="例如: 实用中文：买花场景">
+        </div>
+      </div>
+
+      <div class="card" style="padding:16px;margin-bottom:16px;">
+        <div class="section-title">字幕管理</div>
+
+        <div class="form-group">
+          <label class="form-label">上传字幕文件 <small>(.srt 或 .vtt)</small></label>
+          <input type="file" class="form-input" accept=".srt,.vtt" @change="handleSubtitleFile($event)">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">或粘贴字幕 JSON</label>
+          <textarea class="form-input" x-model="form.subtitleJson" rows="8"
+            placeholder='[{"id":1,"start":2.0,"end":5.5,"text":"你好"}]'></textarea>
+        </div>
+
+        <div x-show="form.subtitles.length > 0" style="margin-top:12px;">
+          <div class="section-title" style="font-size:0.85rem;">预览 (前 3 条)</div>
+          <template x-for="sub in form.subtitles.slice(0, 3)" :key="sub.id">
+            <div style="padding:8px;background:var(--bg);border-radius:6px;margin-bottom:6px;font-size:0.85rem;">
+              <span x-text="sub.id + '. '"></span>
+              <span x-text="'[' + formatTime(sub.start) + ' → ' + formatTime(sub.end) + '] '"></span>
+              <strong x-text="sub.text"></strong>
+              <div style="color:var(--text-secondary);margin-top:2px;" x-show="sub.pinyin || sub.jyutping" x-text="sub.pinyin || sub.jyutping"></div>
+            </div>
+          </template>
+          <div style="font-size:0.8rem;color:var(--text-secondary);" x-text="'共 ' + form.subtitles.length + ' 条字幕'"></div>
+        </div>
+      </div>
+
+      <div x-show="error" style="color:var(--danger);margin-bottom:12px;font-size:0.9rem;" x-text="error"></div>
+      <div x-show="success" style="color:var(--success);margin-bottom:12px;font-size:0.9rem;" x-text="success"></div>
+
+      <button class="btn btn-primary btn-lg" style="width:100%;margin-bottom:20px;" @click="saveVideo()" :disabled="saving">
+        <span x-text="saving ? '保存中...' : '保存视频'"></span>
+      </button>
+    </div>
+
+    <!-- List Tab -->
+    <div x-show="tab === 'list'">
+      <div x-show="loading" style="text-align:center;padding:40px;">
+        <div class="spinner"></div>
+        <div style="margin-top:12px;color:var(--text-secondary);">加载中...</div>
+      </div>
+
+      <div x-show="!loading && videos.length === 0" style="text-align:center;padding:40px;color:var(--text-secondary);">
+        暂无视频，先去"添加视频"标签页创建吧
+      </div>
+
+      <template x-for="v in videos" :key="v.id">
+        <div class="card video-card" style="margin-bottom:12px;">
+          <div class="card-img-wrapper" style="height:120px;">
+            <img class="card-img"
+              :src="v.thumbnail || (v.source === 'youtube' ? 'https://img.youtube.com/vi/' + v.source_id + '/hqdefault.jpg' : '')"
+              :alt="v.title" loading="lazy"
+              @error="$el.style.display='none'">
+            <div class="card-img-tag tag" :class="'tag-' + v.language" x-text="v.language === 'cantonese' ? '粤' : '普'"></div>
+          </div>
+          <div class="card-body">
+            <div class="card-title" x-text="v.title"></div>
+            <div class="card-meta">
+              <span class="tag" :class="'tag-' + v.difficulty" x-text="v.difficulty"></span>
+              <span x-text="v.duration"></span>
+              <span x-text="v.source"></span>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:10px;">
+              <a class="btn btn-sm btn-outline" :href="'watch.html?id=' + v.id">观看</a>
+              <button class="btn btn-sm btn-danger" @click="deleteVideo(v.id)">删除</button>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/components/ui.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/subtitle-processor.js"></script>
+  <script>
+    function adminPage() {
+      return {
+        tab: 'add',
+        loading: false,
+        saving: false,
+        error: '',
+        success: '',
+        videos: [],
+        form: {
+          url: '',
+          id: '',
+          source: '',
+          sourceId: '',
+          sourceUrl: '',
+          parsedType: '',
+          title: '',
+          description: '',
+          duration: '',
+          language: 'mandarin',
+          difficulty: 'beginner',
+          scene: '',
+          subtitle_cn: '',
+          subtitleJson: '',
+          subtitles: [],
+        },
+
+        async init() {
+          await this.loadVideos();
+        },
+
+        async loadVideos() {
+          this.loading = true;
+          try {
+            const dbVideos = await SupabaseDB.getVideos();
+            this.videos = dbVideos || [];
+          } catch (e) {
+            console.warn('Failed to load videos from Supabase:', e);
+            // fallback to local
+            this.videos = await loadVideos();
+          }
+          this.loading = false;
+        },
+
+        parseUrl() {
+          const url = this.form.url.trim();
+          if (!url) return;
+
+          // YouTube patterns
+          const ytPatterns = [
+            /youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/,
+            /youtu\.be\/([a-zA-Z0-9_-]+)/,
+            /youtube\.com\/embed\/([a-zA-Z0-9_-]+)/,
+          ];
+          for (const pattern of ytPatterns) {
+            const match = url.match(pattern);
+            if (match) {
+              this.form.source = 'youtube';
+              this.form.sourceId = match[1];
+              this.form.sourceUrl = null;
+              this.form.parsedType = 'YouTube';
+              if (!this.form.id) this.form.id = match[1];
+              return;
+            }
+          }
+
+          // MP4 / direct video URL
+          if (url.endsWith('.mp4') || url.includes('.mp4?')) {
+            this.form.source = 'mp4';
+            this.form.sourceId = null;
+            this.form.sourceUrl = url;
+            this.form.parsedType = 'MP4 直链';
+            return;
+          }
+
+          // Bilibili
+          const bvMatch = url.match(/bilibili\.com\/video\/(BV[a-zA-Z0-9]+)/);
+          if (bvMatch) {
+            this.form.source = 'bilibili';
+            this.form.sourceId = bvMatch[1];
+            this.form.sourceUrl = null;
+            this.form.parsedType = 'Bilibili';
+            return;
+          }
+
+          this.form.parsedType = '无法识别，请手动选择';
+        },
+
+        handleSubtitleFile(event) {
+          const file = event.target.files[0];
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            try {
+              const rawSubs = parseSubtitleFile(e.target.result, file.name);
+              this.form.subtitles = processSubtitles(rawSubs, this.form.language);
+              this.form.subtitleJson = JSON.stringify(this.form.subtitles, null, 2);
+              this.error = '';
+            } catch (err) {
+              this.error = '字幕解析失败: ' + err.message;
+            }
+          };
+          reader.readAsText(file);
+        },
+
+        async saveVideo() {
+          this.error = '';
+          this.success = '';
+
+          // Validate
+          if (!this.form.id.trim()) { this.error = '请填写视频 ID'; return; }
+          if (!this.form.title.trim()) { this.error = '请填写标题'; return; }
+          if (!this.form.source) { this.error = '请提供有效的视频 URL'; return; }
+
+          // Parse subtitles from JSON textarea
+          let subtitleData = [];
+          if (this.form.subtitleJson.trim()) {
+            try {
+              subtitleData = JSON.parse(this.form.subtitleJson);
+              if (!Array.isArray(subtitleData)) throw new Error('字幕必须是数组');
+            } catch (e) {
+              this.error = '字幕 JSON 格式错误: ' + e.message;
+              return;
+            }
+          }
+
+          this.saving = true;
+          try {
+            const video = {
+              id: this.form.id.trim(),
+              source: this.form.source,
+              source_id: this.form.sourceId || null,
+              source_url: this.form.sourceUrl || null,
+              title: this.form.title.trim(),
+              description: this.form.description.trim() || null,
+              duration: this.form.duration.trim() || null,
+              difficulty: this.form.difficulty,
+              language: this.form.language,
+              scene: this.form.scene.trim() || null,
+              subtitle_cn: this.form.subtitle_cn.trim() || null,
+              thumbnail: null,
+            };
+
+            await SupabaseDB.saveVideo(video);
+
+            if (subtitleData.length > 0) {
+              await SupabaseDB.saveSubtitles(video.id, subtitleData);
+            }
+
+            this.success = '视频保存成功！';
+            this.resetForm();
+            await this.loadVideos();
+          } catch (e) {
+            this.error = '保存失败: ' + (e.message || e);
+          } finally {
+            this.saving = false;
+          }
+        },
+
+        async deleteVideo(id) {
+          if (!confirm('确定要删除视频 "' + id + '" 吗？')) return;
+          try {
+            await SupabaseDB.deleteVideo(id);
+            this.videos = this.videos.filter(v => v.id !== id);
+          } catch (e) {
+            alert('删除失败: ' + (e.message || e));
+          }
+        },
+
+        resetForm() {
+          this.form = {
+            url: '',
+            id: '',
+            source: '',
+            sourceId: '',
+            sourceUrl: '',
+            parsedType: '',
+            title: '',
+            description: '',
+            duration: '',
+            language: 'mandarin',
+            difficulty: 'beginner',
+            scene: '',
+            subtitle_cn: '',
+            subtitleJson: '',
+            subtitles: [],
+          };
+        },
+
+        formatTime(seconds) {
+          const m = Math.floor(seconds / 60);
+          const s = Math.floor(seconds % 60);
+          return m + ':' + String(s).padStart(2, '0');
+        },
+      };
+    }
+  </script>
+</body>
+</html>

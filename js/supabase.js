@@ -220,6 +220,72 @@ const SupabaseDB = {
     return data;
   },
 
+  /** Get all videos */
+  async getVideos() {
+    const { data, error } = await getSupabase()
+      .from('videos')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) {
+      console.warn('getVideos error:', error);
+      return null;
+    }
+    return data;
+  },
+
+  /** Get video by id */
+  async getVideoById(id) {
+    const { data, error } = await getSupabase()
+      .from('videos')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (error && error.code !== 'PGRST116') console.warn(error);
+    return data;
+  },
+
+  /** Save or update a video */
+  async saveVideo(video) {
+    const { data, error } = await getSupabase()
+      .from('videos')
+      .upsert(video)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  /** Delete a video */
+  async deleteVideo(id) {
+    const { error } = await getSupabase()
+      .from('videos')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+  },
+
+  /** Get subtitles for a video */
+  async getSubtitles(videoId) {
+    const { data, error } = await getSupabase()
+      .from('subtitles')
+      .select('data')
+      .eq('video_id', videoId)
+      .single();
+    if (error && error.code !== 'PGRST116') console.warn(error);
+    return data?.data || null;
+  },
+
+  /** Save or update subtitles */
+  async saveSubtitles(videoId, subtitleData) {
+    const { data, error } = await getSupabase()
+      .from('subtitles')
+      .upsert({ video_id: videoId, data: subtitleData })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
   /** Realtime subscription helper */
   subscribe(table, filter, callback) {
     let query = getSupabase()

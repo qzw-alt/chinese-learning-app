@@ -133,23 +133,51 @@ function getVocab(char, lang = 'mandarin') {
   return { ...info, language: lang };
 }
 
-// ---------- Content Loaders (from JSON files) ----------
+// ---------- Content Loaders (Supabase -> JSON files -> hardcoded) ----------
 
-/** Load videos from content JSON (falls back to hardcoded) */
+function snakeToCamel(obj) {
+  if (!obj || typeof obj !== 'object') return obj;
+  const result = {};
+  for (const [key, val] of Object.entries(obj)) {
+    const camelKey = key.replace(/_([a-z])/g, (_, ch) => ch.toUpperCase());
+    result[camelKey] = val;
+  }
+  return result;
+}
+
+/** Load videos: Supabase -> content JSON -> hardcoded */
 async function loadVideos() {
+  // 1. Try Supabase
+  if (typeof SupabaseDB !== 'undefined') {
+    try {
+      const dbVideos = await SupabaseDB.getVideos();
+      if (dbVideos && dbVideos.length > 0) return dbVideos.map(snakeToCamel);
+    } catch (e) { /* fallback */ }
+  }
+  // 2. Try local JSON
   try {
     const res = await fetch('./content/videos.json');
     if (res.ok) return await res.json();
   } catch (e) { /* fallback */ }
+  // 3. Fallback to hardcoded
   return videos;
 }
 
-/** Load subtitles from content JSON (falls back to hardcoded) */
+/** Load subtitles: Supabase -> content JSON -> hardcoded */
 async function loadSubtitles(videoId) {
+  // 1. Try Supabase
+  if (typeof SupabaseDB !== 'undefined') {
+    try {
+      const dbSubs = await SupabaseDB.getSubtitles(videoId);
+      if (dbSubs && dbSubs.length > 0) return dbSubs;
+    } catch (e) { /* fallback */ }
+  }
+  // 2. Try local JSON
   try {
     const res = await fetch(`./content/subtitles/${videoId}.json`);
     if (res.ok) return await res.json();
   } catch (e) { /* fallback */ }
+  // 3. Fallback to hardcoded
   return getSubtitles(videoId);
 }
 

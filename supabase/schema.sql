@@ -162,11 +162,48 @@ CREATE POLICY "Users can insert their own achievements"
   ON achievements FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- ========================================
+-- Videos (admin-curated content)
+-- ========================================
+CREATE TABLE videos (
+  id TEXT PRIMARY KEY,
+  source TEXT NOT NULL CHECK (source IN ('youtube', 'mp4', 'bilibili')),
+  source_id TEXT,
+  source_url TEXT,
+  title TEXT NOT NULL,
+  description TEXT,
+  duration TEXT,
+  difficulty TEXT CHECK (difficulty IN ('beginner', 'intermediate', 'advanced')),
+  language TEXT CHECK (language IN ('mandarin', 'cantonese')),
+  scene TEXT,
+  subtitle_cn TEXT,
+  thumbnail TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE videos ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Videos are readable by everyone"
+  ON videos FOR SELECT USING (true);
+
+-- ========================================
+-- Subtitles (JSONB per video)
+-- ========================================
+CREATE TABLE subtitles (
+  video_id TEXT REFERENCES videos(id) ON DELETE CASCADE,
+  data JSONB NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  PRIMARY KEY (video_id)
+);
+
+ALTER TABLE subtitles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Subtitles are readable by everyone"
+  ON subtitles FOR SELECT USING (true);
+
+-- ========================================
 -- Video Progress
 -- ========================================
 CREATE TABLE progress (
   user_id UUID REFERENCES profiles(id) NOT NULL,
-  video_id TEXT NOT NULL,
+  video_id TEXT REFERENCES videos(id) ON DELETE CASCADE,
   completed BOOLEAN DEFAULT FALSE,
   last_position FLOAT DEFAULT 0,
   updated_at TIMESTAMPTZ DEFAULT NOW(),

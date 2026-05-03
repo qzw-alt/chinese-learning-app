@@ -1,0 +1,107 @@
+[
+  {
+    "date": "2026-05-01",
+    "language": "mandarin",
+    "sentences": [
+      {
+        "text": "今天天气真不错，我们出去走走吧。",
+        "romanization": "jīn tiān tiān qì zhēn bù cuò, wǒ men chū qù zǒu zǒu ba.",
+        "translation": "The weather is really nice today, let's go out for a walk."
+      },
+      {
+        "text": "你喜欢吃什么菜？我推荐麻婆豆腐。",
+        "romanization": "nǐ xǐ huān chī shén me cài? wǒ tuī jiàn má pó dòu fu.",
+        "translation": "What dishes do you like? I recommend mapo tofu."
+      },
+      {
+        "text": "没问题，明天下午三点见面吧。",
+        "romanization": "méi wèn tí, míng tiān xià wǔ sān diǎn jiàn miàn ba.",
+        "translation": "No problem, let's meet tomorrow at 3pm."
+      }
+    ]
+  },
+  {
+    "date": "2026-05-02",
+    "language": "mandarin",
+    "sentences": [
+      {
+        "text": "请问，地铁站在哪里？",
+        "romanization": "qǐng wèn, dì tiě zhàn zài nǎ lǐ?",
+        "translation": "Excuse me, where is the subway station?"
+      },
+      {
+        "text": "一直往前走，然后左转就到了。",
+        "romanization": "yī zhí wǎng qián zǒu, rán hòu zuǒ zhuǎn jiù dào le.",
+        "translation": "Go straight ahead, then turn left and you'll be there."
+      },
+      {
+        "text": "太谢谢你了，你真是帮了大忙。",
+        "romanization": "tài xiè xiè nǐ le, nǐ zhēn shì bāng le dà máng.",
+        "translation": "Thank you so much, you've been a huge help."
+      }
+    ]
+  },
+  {
+    "date": "2026-05-03",
+    "language": "cantonese",
+    "sentences": [
+      {
+        "text": "你食咗飯未呀？一齊去食啦。",
+        "romanization": "nei5 sik6 zo2 faan6 mei6 aa3? jat1 cai4 heoi3 sik6 laa1.",
+        "translation": "Have you eaten yet? Let's go eat together."
+      },
+      {
+        "text": "呢間餐廳嘅點心好好食㗎。",
+        "romanization": "ni1 gaan1 caan1 teng1 ge3 dim2 sam1 hou2 hou2 sik6 gaa3.",
+        "translation": "The dim sum at this restaurant is really delicious."
+      },
+      {
+        "text": "聽日見啦，早啲唞！",
+        "romanization": "ting1 jat6 gin3 laa1, zou2 di1 tau2!",
+        "translation": "See you tomorrow, sleep early!"
+      }
+    ]
+  },
+  {
+    "date": "2026-05-04",
+    "language": "cantonese",
+    "sentences": [
+      {
+        "text": "唔該，呢個幾多錢呀？",
+        "romanization": "m4 goi1, ni1 go3 gei2 do1 cin2 aa3?",
+        "translation": "Excuse me, how much is this?"
+      },
+      {
+        "text": "好平㗎，二十蚊咋。",
+        "romanization": "hou2 peng4 gaa3, ji6 sap6 man1 zaa3.",
+        "translation": "It's cheap, only 20 dollars."
+      },
+      {
+        "text": "多謝晒，下次再嚟幫襯。",
+        "romanization": "do1 ze6 saai3, haa6 ci3 zoi3 lei4 bong1 can3.",
+        "translation": "Thanks a lot, come again next time."
+      }
+    ]
+  },
+  {
+    "date": "2026-05-05",
+    "language": "mandarin",
+    "sentences": [
+      {
+        "text": "抱歉我来晚了，路上堵车了。",
+        "romanization": "bào qiàn wǒ lái wǎn le, lù shàng dǔ chē le.",
+        "translation": "Sorry I'm late, there was traffic on the way."
+      },
+      {
+        "text": "没关系，我们也刚到不久。",
+        "romanization": "méi guān xì, wǒ men yě gāng dào bù jiǔ.",
+        "translation": "No worries, we just got here too."
+      },
+      {
+        "text": "那我们开始点菜吧，我饿坏了。",
+        "romanization": "nà wǒ men kāi shǐ diǎn cài ba, wǒ è huài le.",
+        "translation": "Let's start ordering then, I'm starving."
+      }
+    ]
+  }
+]

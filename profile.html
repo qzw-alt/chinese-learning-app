@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的 — ChineseFlix</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <header class="app-header">
+    <span class="logo">👤 我的</span>
+    <div style="flex:1"></div>
+  </header>
+
+  <div class="page-container" x-data="profilePage()" x-init="init()">
+
+    <!-- Not logged in -->
+    <div x-show="!loggedIn" style="text-align:center;padding:40px 0;">
+      <div style="font-size:4rem;margin-bottom:16px;">👤</div>
+      <div class="modal-title">登录解锁更多功能</div>
+      <div style="color:var(--text-secondary);margin-bottom:20px;font-size:0.9rem;">
+        同步生词本、参与每日跟读、打卡记录
+      </div>
+      <a class="btn btn-primary btn-lg" href="login.html">登录 / 注册</a>
+      <div style="margin-top:16px;">
+        <a href="index.html" style="color:var(--text-secondary);font-size:0.85rem;">跳过，离线使用</a>
+      </div>
+    </div>
+
+    <!-- Logged in -->
+    <div x-show="loggedIn">
+
+      <!-- Profile Header -->
+      <div class="profile-header">
+        <div class="profile-avatar" x-text="username[0] || '?'"></div>
+        <div class="profile-name" x-text="username || '未设置'"></div>
+      </div>
+
+      <!-- Streak + XP -->
+      <div style="display:flex;justify-content:center;gap:16px;padding:8px 0;">
+        <div class="streak-display">🔥 <span x-text="streakCount"></span> 天</div>
+        <div style="font-size:0.85rem;color:var(--text-secondary);font-weight:600;display:flex;align-items:center;gap:4px;">
+          ⭐ Lv.<span x-text="level.level"></span> <span x-text="level.title"></span>
+        </div>
+      </div>
+
+      <!-- XP Bar -->
+      <div class="xp-bar-wrapper">
+        <div class="xp-bar-header">
+          <span x-text="xp + ' / ' + (nextLevel ? nextLevel.xp : 'MAX') + ' XP'"></span>
+          <span x-text="xpProgress + '%'"></span>
+        </div>
+        <div class="xp-bar">
+          <div class="xp-bar-fill" :style="'width:' + xpProgress + '%'"></div>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="profile-stats-grid">
+        <div class="profile-stat-item">
+          <div class="ps-value" x-text="streakCount"></div>
+          <div class="ps-label">连续打卡</div>
+        </div>
+        <div class="profile-stat-item">
+          <div class="ps-value" x-text="reviewStats.totalReviews"></div>
+          <div class="ps-label">累计复习</div>
+        </div>
+        <div class="profile-stat-item">
+          <div class="ps-value" x-text="vocabCount"></div>
+          <div class="ps-label">生词本</div>
+        </div>
+      </div>
+
+      <!-- Badge Wall -->
+      <div class="section-title">🏆 徽章</div>
+      <div class="badge-grid">
+        <template x-for="badge in allBadges" :key="badge.id">
+          <div class="badge-item" :class="{ locked: !badge.earned }">
+            <span class="badge-emoji" x-text="badge.icon"></span>
+            <span class="badge-name" x-text="badge.title"></span>
+          </div>
+        </template>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="section-title">⚡ 快捷操作</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <a class="btn btn-outline" href="daily.html" style="justify-content:flex-start;">🗣️ 今日跟读</a>
+        <a class="btn btn-outline" href="review.html" style="justify-content:flex-start;">📚 闪卡复习</a>
+        <a class="btn btn-outline" href="vocabulary.html" style="justify-content:flex-start;">📖 我的生词本</a>
+      </div>
+
+      <!-- Logout -->
+      <div style="text-align:center;padding:24px 0;">
+        <button class="btn btn-danger btn-sm" @click="logout">退出登录</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Tab Bar -->
+  <nav class="tab-bar">
+    <a class="tab-item" href="index.html"><span class="tab-icon">🏠</span>首页</a>
+    <a class="tab-item" href="vocabulary.html"><span class="tab-icon">📖</span>生词</a>
+    <a class="tab-item" href="daily.html"><span class="tab-icon">🗣️</span>每日</a>
+    <a class="tab-item active" href="profile.html"><span class="tab-icon">👤</span>我的</a>
+  </nav>
+
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/components/ui.js"></script>
+  <script>
+    function profilePage() {
+      return {
+        loggedIn: false,
+        username: '',
+        streakCount: 0,
+        xp: 0,
+        level: CONFIG.LEVELS[0],
+        nextLevel: null,
+        xpProgress: 0,
+        reviewStats: { totalReviews: 0, todayReviews: 0 },
+        vocabCount: 0,
+
+        get allBadges() {
+          const earned = Storage.getBadges();
+          return Object.keys(CONFIG.BADGES).map(id => ({
+            id,
+            ...CONFIG.BADGES[id],
+            earned: earned.includes(id),
+          }));
+        },
+
+        async init() {
+          const store = Alpine.store('user');
+          store.init();
+
+          // Check auth
+          const user = await SupabaseAuth.getUser();
+          if (user) {
+            this.loggedIn = true;
+            this.username = user.user_metadata?.username || user.email || '';
+
+            // Try to load profile from DB
+            const profile = await SupabaseDB.getProfile(user.id);
+            if (profile) {
+              this.streakCount = profile.streak_count || 0;
+              this.xp = profile.total_xp || 0;
+            } else {
+              this.streakCount = store.streak.count;
+              this.xp = store.xp;
+            }
+          } else {
+            this.streakCount = store.streak.count;
+            this.xp = store.xp;
+          }
+
+          this.level = Storage.getLevel(this.xp);
+          this.nextLevel = Storage.getNextLevel(this.xp);
+          this.xpProgress = this.nextLevel
+            ? Math.round(((this.xp - this.level.xp) / (this.nextLevel.xp - this.level.xp)) * 100)
+            : 100;
+
+          this.reviewStats = Storage.getReviewStats();
+          this.vocabCount = Storage.getVocabBook().length;
+        },
+
+        async logout() {
+          try {
+            await SupabaseAuth.signOut();
+          } catch (e) { /* ignore */ }
+          this.loggedIn = false;
+          showToast('已退出');
+        },
+      };
+    }
+  </script>
+</body>
+</html>

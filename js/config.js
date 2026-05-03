@@ -1,0 +1,63 @@
+/* ========================================
+   ChineseFlix — App Configuration
+   ======================================== */
+
+const CONFIG = {
+  // Supabase (replace with your project credentials)
+  SUPABASE_URL: 'https://YOUR-PROJECT.supabase.co',
+  SUPABASE_ANON_KEY: 'YOUR-ANON-KEY',
+
+  // App
+  APP_NAME: 'ChineseFlix',
+  TAGLINE: 'Learn Chinese Through Movies',
+
+  // XP rewards
+  XP: {
+    WATCH_VIDEO: 10,
+    COMPLETE_SPEAK: 5,
+    REVIEW_CARD: 3,
+    DAILY_SENTENCE: 15,
+    STREAK_BONUS: 2, // per consecutive day
+  },
+
+  // Levels (cumulative XP thresholds)
+  LEVELS: [
+    { level: 1, title: '新手', xp: 0 },
+    { level: 2, title: '入门', xp: 50 },
+    { level: 3, title: '学徒', xp: 150 },
+    { level: 4, title: '进阶', xp: 350 },
+    { level: 5, title: '熟练', xp: 700 },
+    { level: 6, title: '高手', xp: 1200 },
+    { level: 7, title: '达人', xp: 2000 },
+    { level: 8, title: '专家', xp: 3500 },
+    { level: 9, title: '大师', xp: 5500 },
+    { level: 10, title: '传奇', xp: 8000 },
+  ],
+
+  // Badge definitions
+  BADGES: {
+    first_recording: { title: '初次开口', desc: '完成第一次跟读录音', icon: '🎙️' },
+    streak_7: { title: '坚持一周', desc: '连续打卡 7 天', icon: '🔥' },
+    streak_30: { title: '月度之星', desc: '连续打卡 30 天', icon: '⭐' },
+    review_100: { title: '百卡斩', desc: '完成 100 张闪卡复习', icon: '📚' },
+    vocab_50: { title: '词汇达人', desc: '收藏 50 个生词', icon: '📝' },
+    video_10: { title: '影迷', desc: '学完 10 个视频', icon: '🎬' },
+    likes_10: { title: '人气之星', desc: '收到 10 个社区点赞', icon: '❤️' },
+    cantonese_first: { title: '粤语初体验', desc: '完成第一句粤语跟读', icon: '🗣️' },
+  },
+
+  // SRS defaults
+  SRS: {
+    DEFAULT_EASE: 2.5,
+    DEFAULT_INTERVAL_HOURS: 0,
+    MIN_EASE: 1.3,
+    INTERVALS: [0, 4, 24, 72, 168, 336, 720, 2160], // hours: now, 4h, 1d, 3d, 7d, 14d, 30d, 90d
+  },
+};
+
+// Freeze to prevent accidental mutation
+Object.freeze(CONFIG);
+Object.freeze(CONFIG.XP);
+Object.freeze(CONFIG.LEVELS);
+Object.freeze(CONFIG.BADGES);
+Object.freeze(CONFIG.SRS);

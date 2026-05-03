@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChineseFlix — 看电影学中文</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <span class="logo">🎬 ChineseFlix</span>
+    <div style="flex:1"></div>
+    <div x-data="{ lang: Storage.getSettings().preferredLanguage }" class="lang-selector">
+      <button class="lang-option" :class="{ active: lang === 'mandarin' }"
+        @click="lang = 'mandarin'; Storage.saveSettings({ preferredLanguage: 'mandarin' }); $dispatch('lang-change', 'mandarin')">普通话</button>
+      <button class="lang-option" :class="{ active: lang === 'cantonese' }"
+        @click="lang = 'cantonese'; Storage.saveSettings({ preferredLanguage: 'cantonese' }); $dispatch('lang-change', 'cantonese')">粤语</button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="page-container" x-data="homePage()" x-init="init()">
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <button class="filter-btn" :class="{ active: filter === 'all' }" @click="filter = 'all'">全部</button>
+      <button class="filter-btn" :class="{ active: filter === 'mandarin' }" @click="filter = 'mandarin'">普通话</button>
+      <button class="filter-btn" :class="{ active: filter === 'cantonese' }" @click="filter = 'cantonese'">粤语</button>
+      <button class="filter-btn" :class="{ active: filter === 'beginner' }" @click="filter = 'beginner'">初级</button>
+      <button class="filter-btn" :class="{ active: filter === 'intermediate' }" @click="filter = 'intermediate'">中级</button>
+      <button class="filter-btn" :class="{ active: filter === 'advanced' }" @click="filter = 'advanced'">高级</button>
+    </div>
+
+    <!-- Loading -->
+    <div x-show="loading" x-html="renderSpinner('加载视频中...')"></div>
+
+    <!-- Empty -->
+    <div x-show="!loading && filtered.length === 0" x-html="renderEmptyState('📭', '暂无视频', '更多视频即将上线')"></div>
+
+    <!-- Video Grid -->
+    <div class="video-grid" x-show="!loading && filtered.length > 0">
+      <template x-for="v in filtered" :key="v.id">
+        <div class="card" @click="goTo('watch.html?id=' + v.id)">
+          <img class="card-img"
+            :src="v.thumbnail || 'https://img.youtube.com/vi/' + v.sourceId + '/hqdefault.jpg'"
+            :alt="v.title" loading="lazy">
+          <div class="card-body">
+            <div class="card-title" x-text="v.title"></div>
+            <div class="card-meta">
+              <span x-text="v.duration"></span>
+              <span class="tag" :class="'tag-' + v.difficulty" x-text="diffLabel(v.difficulty)"></span>
+              <span class="tag" :class="'tag-' + v.language" x-text="v.language === 'cantonese' ? '粤语' : '普通话'"></span>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+
+  <!-- Bottom Tab Bar -->
+  <nav class="tab-bar">
+    <a class="tab-item active" href="index.html">
+      <span class="tab-icon">🏠</span>首页
+    </a>
+    <a class="tab-item" href="vocabulary.html">
+      <span class="tab-icon">📖</span>生词
+    </a>
+    <a class="tab-item" href="daily.html">
+      <span class="tab-icon">🗣️</span>每日
+    </a>
+    <a class="tab-item" href="profile.html">
+      <span class="tab-icon">👤</span>我的
+    </a>
+  </nav>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/components/ui.js"></script>
+  <script src="js/data.js"></script>
+  <script>
+    function homePage() {
+      return {
+        videos: [],
+        filter: 'all',
+        loading: true,
+
+        async init() {
+          this.videos = await loadVideos();
+          this.loading = false;
+          Alpine.store('user').init();
+        },
+
+        get filtered() {
+          if (this.filter === 'all') return this.videos;
+          if (['mandarin', 'cantonese'].includes(this.filter)) {
+            return this.videos.filter(v => v.language === this.filter);
+          }
+          return this.videos.filter(v => v.difficulty === this.filter);
+        },
+
+        diffLabel(d) {
+          const map = { beginner: '初级', intermediate: '中级', advanced: '高级' };
+          return map[d] || d;
+        },
+      };
+    }
+  </script>
+</body>
+</html>

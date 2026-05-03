@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>观看 — ChineseFlix</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <a class="back-btn" href="index.html">← 返回</a>
+    <span class="header-title" id="videoTitle">加载中...</span>
+    <div style="flex:1"></div>
+    <span class="streak-display small" x-data x-show="Alpine.store('user')?.streak?.count > 0"
+      x-text="'🔥 ' + (Alpine.store('user')?.streak?.count || 0)"></span>
+  </header>
+
+  <div class="page-container" x-data="watchPage()" x-init="init()">
+
+    <!-- Loading -->
+    <div x-show="loading" style="text-align:center;padding:40px;">
+      <div class="spinner"></div>
+      <div style="margin-top:12px;color:var(--text-secondary);">加载视频中...</div>
+    </div>
+
+    <!-- Error -->
+    <div x-show="error" style="text-align:center;padding:48px 20px;">
+      <div style="font-size:3rem;margin-bottom:12px;">⚠️</div>
+      <div style="font-size:0.95rem;" x-text="error"></div>
+      <div style="font-size:0.8rem;color:var(--text-secondary);margin-top:4px;">
+        <a href="index.html">← 返回首页</a>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div x-show="!loading && !error">
+
+      <!-- Video Player -->
+      <div class="video-wrapper" id="playerContainer">
+        <div id="player"></div>
+      </div>
+
+      <!-- Language & Speed Controls -->
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:8px 0;">
+        <span class="tag" :class="'tag-' + video.language" x-text="video.language === 'cantonese' ? '粤语' : '普通话'"></span>
+        <div class="speed-control" id="speedControl">
+          <span class="speed-label">语速</span>
+          <button class="speed-btn active" data-rate="0.75">0.75x</button>
+          <button class="speed-btn" data-rate="1">1x</button>
+          <button class="speed-btn" data-rate="1.25">1.25x</button>
+        </div>
+      </div>
+
+      <!-- Subtitle List -->
+      <div class="section-title">📝 字幕</div>
+      <div class="subtitle-list" id="subtitleList"></div>
+
+      <!-- Check-in -->
+      <div style="text-align:center;padding:20px 0;">
+        <button class="btn btn-primary btn-lg" @click="checkIn">✅ 完成学习，今日打卡</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Container -->
+  <div id="modalContainer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/components/ui.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/components/player.js"></script>
+  <script src="js/components/subtitles.js"></script>
+  <script>
+    function watchPage() {
+      return {
+        video: null,
+        subtitles: [],
+        loading: true,
+        error: '',
+        playerCtrl: null,
+        subtitleMgr: null,
+
+        async init() {
+          const params = new URLSearchParams(window.location.search);
+          const videoId = params.get('id');
+          if (!videoId) { this.error = '未指定视频ID'; this.loading = false; return; }
+
+          const v = getVideoById(videoId);
+          if (!v) { this.error = '视频未找到'; this.loading = false; return; }
+          this.video = v;
+
+          const subs = await loadSubtitles(videoId);
+          if (!subs.length) { this.error = '暂无字幕'; this.loading = false; return; }
+          this.subtitles = subs;
+
+          document.title = v.title + ' — ChineseFlix';
+          document.getElementById('videoTitle').textContent = v.title;
+          this.loading = false;
+
+          // Init player after DOM renders
+          this.$nextTick(() => {
+            this.playerCtrl = createPlayer('player', v, {
+              onPlay: () => this.subtitleMgr?.startSync(),
+              onPause: () => this.subtitleMgr?.stopSync(),
+              onSeeked: () => this.subtitleMgr?.updateActive(),
+              onEnded: () => this.subtitleMgr?.stopSync(),
+            });
+
+            this.subtitleMgr = createSubtitles({
+              containerId: 'subtitleList',
+              subtitles: subs,
+              playerCtrl: this.playerCtrl,
+              language: v.language,
+            });
+
+            // Bind click events
+            this.subtitleMgr.onContainerClick((e) => {
+              const speakBtn = e.target.closest('.btn-speak');
+              if (speakBtn) {
+                e.stopPropagation();
+                const subId = parseInt(speakBtn.dataset.speakId);
+                const sub = subs.find(s => s.id === subId);
+                if (sub) this.openSpeak(sub);
+                return;
+              }
+              const line = e.target.closest('.subtitle-line');
+              if (line && this.playerCtrl) {
+                const start = parseFloat(line.dataset.start);
+                if (!isNaN(start)) {
+                  this.playerCtrl.seek(start);
+                  this.playerCtrl.play();
+                }
+              }
+              const charEl = e.target.closest('.char-clickable');
+              if (charEl) {
+                e.stopPropagation();
+                this.openVocab(charEl.dataset.char, charEl.dataset.source);
+              }
+            });
+
+            // Speed control
+            document.getElementById('speedControl').addEventListener('click', (e) => {
+              const btn = e.target.closest('.speed-btn');
+              if (!btn) return;
+              document.querySelectorAll('#speedControl .speed-btn').forEach(b => b.classList.remove('active'));
+              btn.classList.add('active');
+              this.playerCtrl?.setSpeed(parseFloat(btn.dataset.rate));
+            });
+          });
+        },
+
+        openSpeak(sub) {
+          AudioRecorder.cleanup();
+          const html = `
+            <div class="modal-overlay" id="speakOverlay">
+              <div class="modal">
+                <button class="modal-close" id="speakClose">✕</button>
+                <div class="modal-title">🎤 跟读练习</div>
+                <div class="speak-sentence">${sub.text}</div>
+                <div style="text-align:center;margin-bottom:16px;color:var(--text-secondary);">${sub.translation}</div>
+                <div class="speak-controls">
+                  <button class="btn btn-outline btn-lg" id="playOrigBtn">🔊 播放原声</button>
+                  <button class="btn btn-primary btn-lg" id="startRecBtn">🎙️ 开始录音</button>
+                  <button class="btn btn-danger btn-lg" id="stopRecBtn" style="display:none;">
+                    <span class="recording-indicator"></span> 停止录音
+                  </button>
+                  <div id="playbackArea" style="display:none;">
+                    <div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:6px;">你的录音：</div>
+                    <audio id="playbackAudio" controls></audio>
+                  </div>
+                </div>
+                <div style="display:flex;gap:10px;justify-content:center;margin-top:20px;">
+                  <button class="btn btn-outline" id="retryBtn">🔄 重录</button>
+                  <button class="btn btn-primary" id="doneBtn">✓ 完成</button>
+                </div>
+              </div>
+            </div>`;
+
+          const close = openModal(html, { overlayId: 'speakOverlay' });
+
+          setTimeout(() => {
+            document.getElementById('speakClose').addEventListener('click', close);
+            document.getElementById('doneBtn').addEventListener('click', () => {
+              Alpine.store('user').addXP(CONFIG.XP.COMPLETE_SPEAK);
+              showToast(`+${CONFIG.XP.COMPLETE_SPEAK} XP`);
+              close();
+            });
+
+            document.getElementById('playOrigBtn').addEventListener('click', () => {
+              playClip(this.playerCtrl, sub.start, sub.end);
+            });
+
+            document.getElementById('startRecBtn').addEventListener('click', async () => {
+              try {
+                await AudioRecorder.start();
+                document.getElementById('startRecBtn').style.display = 'none';
+                document.getElementById('stopRecBtn').style.display = '';
+              } catch (e) {
+                showToast('无法访问麦克风', 'error');
+              }
+            });
+
+            document.getElementById('stopRecBtn').addEventListener('click', async () => {
+              await AudioRecorder.stop();
+              document.getElementById('stopRecBtn').style.display = 'none';
+              const pb = document.getElementById('playbackArea');
+              const audio = document.getElementById('playbackAudio');
+              pb.style.display = '';
+              audio.src = AudioRecorder.getPlaybackUrl();
+            });
+
+            document.getElementById('retryBtn').addEventListener('click', () => {
+              AudioRecorder.cleanup();
+              document.getElementById('startRecBtn').style.display = '';
+              document.getElementById('stopRecBtn').style.display = 'none';
+              document.getElementById('playbackArea').style.display = 'none';
+            });
+          }, 50);
+        },
+
+        openVocab(char, source) {
+          const vocab = getVocab(char, this.video.language);
+          const romanKey = this.video.language === 'cantonese' ? 'jyutping' : 'pinyin';
+          const romanLabel = this.video.language === 'cantonese' ? '粤拼' : '拼音';
+
+          const html = `
+            <div class="modal-overlay" id="vocabOverlay">
+              <div class="modal">
+                <button class="modal-close" id="vocabClose">✕</button>
+                <div class="vocab-char">${char}</div>
+                ${vocab ? `
+                  <div class="vocab-pinyin">${romanLabel}：${vocab[romanKey] || vocab.pinyin || ''}</div>
+                  <div class="vocab-pos">${vocab.pos}</div>
+                  <hr class="vocab-divider">
+                  <div class="vocab-meaning">${vocab.meaning}</div>
+                ` : `
+                  <div class="vocab-pinyin">—</div>
+                  <div class="vocab-pos" style="color:var(--text-secondary);">未知</div>
+                  <hr class="vocab-divider">
+                  <div class="vocab-meaning">暂无释义</div>
+                `}
+                <div class="vocab-actions">
+                  ${vocab ? `<button class="btn btn-primary" id="saveVocabBtn">⭐ 收藏到生词本</button>` : ''}
+                  <button class="btn btn-secondary" id="closeVocabBtn">关闭</button>
+                </div>
+              </div>
+            </div>`;
+
+          const close = openModal(html, { overlayId: 'vocabOverlay' });
+
+          setTimeout(() => {
+            document.getElementById('vocabClose')?.addEventListener('click', close);
+            document.getElementById('closeVocabBtn')?.addEventListener('click', close);
+            document.getElementById('saveVocabBtn')?.addEventListener('click', () => {
+              if (vocab) {
+                Storage.addVocabWord(char, {
+                  ...vocab,
+                  romanization: vocab[romanKey] || vocab.pinyin || '',
+                  language: this.video.language,
+                }, source);
+                showToast(`已收藏「${char}」`);
+              }
+              close();
+            });
+          }, 50);
+        },
+
+        async checkIn() {
+          await Alpine.store('user').checkIn();
+          Alpine.store('user').addXP(CONFIG.XP.WATCH_VIDEO);
+          showToast(`🔥 打卡成功！+${CONFIG.XP.WATCH_VIDEO} XP`);
+        },
+      };
+    }
+  </script>
+</body>
+</html>

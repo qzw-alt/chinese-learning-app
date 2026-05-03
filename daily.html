@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>每日三句 — ChineseFlix</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <header class="app-header">
+    <span class="logo">🗣️ 每日三句</span>
+    <div style="flex:1"></div>
+    <span class="streak-display small" x-data x-show="Alpine.store('user')?.streak?.count > 0"
+      x-text="'🔥 ' + (Alpine.store('user')?.streak?.count || 0)"></span>
+  </header>
+
+  <div class="page-container" x-data="dailyPage()" x-init="init()">
+
+    <!-- Date Picker -->
+    <div class="day-picker" x-show="dates.length > 0">
+      <template x-for="d in dates" :key="d.date">
+        <button class="day-chip" :class="{ active: d.date === selectedDate, today: d.isToday }"
+          @click="selectDate(d.date)" x-text="d.label"></button>
+      </template>
+    </div>
+
+    <!-- Loading -->
+    <div x-show="loading" style="text-align:center;padding:40px;">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- No Data -->
+    <div x-show="!loading && !sentences" style="text-align:center;padding:40px;">
+      <div style="font-size:3rem;">📅</div>
+      <div style="margin-top:12px;color:var(--text-secondary);">该日期暂无句子</div>
+    </div>
+
+    <!-- Sentences -->
+    <div x-show="!loading && sentences">
+
+      <!-- Language Toggle -->
+      <div style="display:flex;gap:6px;justify-content:center;padding:12px 0;">
+        <template x-for="l of activeLanguages" :key="l">
+          <button class="filter-btn" :class="{ active: currentLang === l }"
+            @click="currentLang = l; loadSentences()" x-text="l === 'mandarin' ? '普通话' : '粤语'"></button>
+        </template>
+      </div>
+
+      <!-- Sentence Cards -->
+      <template x-for="(s, i) in sentences" :key="i">
+        <div class="daily-card">
+          <div class="sentence-text" x-text="s.text"></div>
+          <div class="sentence-romanization" x-text="s.romanization"></div>
+          <div class="sentence-translation" x-text="s.translation"></div>
+
+          <div class="sentence-actions">
+            <button class="btn btn-outline btn-sm" @click="playOriginal(s)">
+              🔊 原声
+            </button>
+            <button class="btn btn-primary btn-sm" @click="startRecord(i)"
+              :disabled="recordingIdx === i && recording">
+              🎙️ 跟读
+            </button>
+            <button class="btn btn-danger btn-sm" @click="stopRecord()"
+              x-show="recordingIdx === i && recording" style="display:none;" id="stopBtn">
+              <span class="recording-indicator"></span> 停止
+            </button>
+          </div>
+
+          <!-- Playback -->
+          <div x-show="recordingIdx === i && playbackUrl" style="margin-top:12px;">
+            <audio :src="playbackUrl" controls style="width:100%;max-width:280px;"></audio>
+            <div style="display:flex;gap:8px;justify-content:center;margin-top:8px;">
+              <button class="btn btn-outline btn-sm" @click="retryRecording()">🔄 重录</button>
+              <button class="btn btn-primary btn-sm" @click="submitRecording(i)">📤 发布</button>
+            </div>
+          </div>
+
+          <!-- Community Recordings -->
+          <div x-show="communityData[i] && communityData[i].length > 0" style="margin-top:16px;">
+            <div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:8px;">
+              👥 社区跟读（<span x-text="communityData[i].length"></span>）
+            </div>
+            <template x-for="rec in (communityData[i] || [])" :key="rec.id">
+              <div class="recording-item" style="box-shadow:none;border:1px solid var(--border);">
+                <div class="ri-header">
+                  <div class="ri-avatar" x-text="(rec.profiles?.username || '?')[0]"></div>
+                  <div class="ri-user">
+                    <div class="ri-username" x-text="rec.profiles?.username || '匿名'"></div>
+                    <div class="ri-time" x-text="timeAgo(rec.created_at)"></div>
+                  </div>
+                </div>
+                <audio :src="rec.audio_url" controls preload="none" style="width:100%;height:32px;"></audio>
+                <div class="ri-actions" style="margin-top:8px;">
+                  <button class="ri-action-btn" @click="toggleLike(rec)" :class="{ liked: rec.liked }">
+                    ❤️ <span x-text="rec.likes_count || 0"></span>
+                  </button>
+                  <button class="ri-action-btn" @click="showComments(rec)">
+                    💬 评论
+                  </button>
+                </div>
+                <!-- Comments section (collapsed by default) -->
+                <div x-show="commentTarget === rec.id" class="comment-section">
+                  <template x-for="c in (comments[rec.id] || [])" :key="c.id">
+                    <div class="comment-item">
+                      <span class="cmt-user" x-text="(c.profiles?.username || '?') + '：'"></span>
+                      <span class="cmt-text" x-text="c.content"></span>
+                    </div>
+                  </template>
+                  <div class="comment-input-row">
+                    <input type="text" :id="'cmtInput_' + rec.id" placeholder="写评论..." @keyup.enter="addComment(rec)">
+                    <button class="btn btn-primary btn-sm" @click="addComment(rec)">发送</button>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- Check-in -->
+    <div x-show="!loading && sentences" style="text-align:center;padding:20px 0;">
+      <button class="btn btn-primary btn-lg" @click="dailyCheckIn">✅ 今日打卡 (+15 XP)</button>
+    </div>
+  </div>
+
+  <!-- Bottom Tab Bar -->
+  <nav class="tab-bar">
+    <a class="tab-item" href="index.html"><span class="tab-icon">🏠</span>首页</a>
+    <a class="tab-item" href="vocabulary.html"><span class="tab-icon">📖</span>生词</a>
+    <a class="tab-item active" href="daily.html"><span class="tab-icon">🗣️</span>每日</a>
+    <a class="tab-item" href="profile.html"><span class="tab-icon">👤</span>我的</a>
+  </nav>
+
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/components/ui.js"></script>
+  <script src="js/audio.js"></script>
+  <script>
+    function dailyPage() {
+      return {
+        dates: [],
+        selectedDate: '',
+        currentLang: 'mandarin',
+        sentences: null,
+        allData: [],
+        loading: true,
+        recording: false,
+        recordingIdx: -1,
+        playbackUrl: '',
+        recordedBlob: null,
+        communityData: {},
+        comments: {},
+        commentTarget: null,
+
+        async init() {
+          Alpine.store('user').init();
+
+          // Load local data
+          this.allData = await loadDailySentences();
+
+          // Build date list
+          const today = new Date().toISOString().slice(0, 10);
+          this.dates = this.allData.map(d => ({
+            date: d.date,
+            label: fmtDate(d.date),
+            isToday: d.date === today,
+          }));
+
+          if (this.dates.length > 0) {
+            this.selectedDate = today;
+            // If today not found, use latest
+            if (!this.allData.find(d => d.date === today)) {
+              this.selectedDate = this.dates[this.dates.length - 1].date;
+            }
+            await this.loadSentences();
+          }
+
+          this.loading = false;
+        },
+
+        get activeLanguages() {
+          const set = new Set(this.allData.map(d => d.language));
+          return [...set];
+        },
+
+        async selectDate(date) {
+          this.selectedDate = date;
+          await this.loadSentences();
+        },
+
+        async loadSentences() {
+          const entry = this.allData.find(d => d.date === this.selectedDate && d.language === this.currentLang);
+          this.sentences = entry ? entry.sentences : null;
+          this.communityData = {};
+          this.comments = {};
+          this.commentTarget = null;
+
+          // Try Supabase if available
+          if (entry && await isSupabaseAvailable()) {
+            const dbEntry = await SupabaseDB.getDailySentences(this.selectedDate, this.currentLang);
+            if (dbEntry) {
+              this.sentences = dbEntry.sentences;
+              for (let i = 0; i < this.sentences.length; i++) {
+                this.communityData[i] = await SupabaseDB.getRecordings(dbEntry.id);
+              }
+            }
+          }
+        },
+
+        playOriginal(s) {
+          // TTS placeholder — would use MiniMax TTS or pre-recorded audio
+          if (s.source_audio_url) {
+            new Audio(s.source_audio_url).play();
+          } else {
+            // Use browser SpeechSynthesis as fallback
+            const utter = new SpeechSynthesisUtterance(s.text);
+            utter.lang = this.currentLang === 'cantonese' ? 'zh-HK' : 'zh-CN';
+            utter.rate = 0.8;
+            speechSynthesis.speak(utter);
+          }
+        },
+
+        async startRecord(i) {
+          try {
+            AudioRecorder.cleanup();
+            this.playbackUrl = '';
+            this.recordedBlob = null;
+            await AudioRecorder.start();
+            this.recordingIdx = i;
+            this.recording = true;
+          } catch (e) {
+            showToast('无法访问麦克风', 'error');
+          }
+        },
+
+        async stopRecord() {
+          const blob = await AudioRecorder.stop();
+          this.recordedBlob = blob;
+          this.playbackUrl = AudioRecorder.getPlaybackUrl();
+          this.recording = false;
+        },
+
+        retryRecording() {
+          AudioRecorder.cleanup();
+          this.playbackUrl = '';
+          this.recordedBlob = null;
+          this.recording = false;
+          this.recordingIdx = -1;
+        },
+
+        async submitRecording(i) {
+          if (!this.recordedBlob) return;
+          const user = await SupabaseAuth.getUser();
+          if (!user) {
+            showToast('请先登录', 'error');
+            return;
+          }
+
+          try {
+            const entry = this.allData.find(d => d.date === this.selectedDate && d.language === this.currentLang);
+            if (!entry) return;
+
+            const dbEntry = await SupabaseDB.getDailySentences(this.selectedDate, this.currentLang);
+            if (dbEntry) {
+              await SupabaseDB.uploadRecording(user.id, dbEntry.id, this.recordedBlob);
+              showToast('发布成功！');
+
+              // Refresh community data
+              this.communityData[i] = await SupabaseDB.getRecordings(dbEntry.id);
+            } else {
+              showToast('句子数据未找到', 'error');
+            }
+          } catch (e) {
+            showToast('上传失败：' + (e.message || '重试看看'), 'error');
+          }
+
+          this.retryRecording();
+        },
+
+        async toggleLike(rec) {
+          const user = await SupabaseAuth.getUser();
+          if (!user) { showToast('请先登录', 'error'); return; }
+
+          try {
+            const wasLiked = rec.liked;
+            rec.liked = !wasLiked;
+            rec.likes_count += wasLiked ? -1 : 1;
+            await SupabaseDB.toggleLike(user.id, rec.id, wasLiked);
+          } catch (e) {
+            // revert
+            rec.liked = !rec.liked;
+            rec.likes_count += rec.liked ? -1 : 1;
+          }
+        },
+
+        showComments(rec) {
+          this.commentTarget = this.commentTarget === rec.id ? null : rec.id;
+          if (this.commentTarget && !this.comments[rec.id]) {
+            SupabaseDB.getComments(rec.id).then(data => {
+              this.comments[rec.id] = data || [];
+            });
+          }
+        },
+
+        async addComment(rec) {
+          const user = await SupabaseAuth.getUser();
+          if (!user) { showToast('请先登录', 'error'); return; }
+
+          const input = document.getElementById('cmtInput_' + rec.id);
+          if (!input) return;
+          const content = input.value.trim();
+          if (!content) return;
+
+          try {
+            const comment = await SupabaseDB.addComment(user.id, rec.id, content);
+            if (!this.comments[rec.id]) this.comments[rec.id] = [];
+            this.comments[rec.id].push(comment);
+            input.value = '';
+          } catch (e) {
+            showToast('评论失败', 'error');
+          }
+        },
+
+        async dailyCheckIn() {
+          await Alpine.store('user').checkIn();
+          Alpine.store('user').addXP(CONFIG.XP.DAILY_SENTENCE);
+          showToast(`🔥 打卡成功！+${CONFIG.XP.DAILY_SENTENCE} XP`);
+        },
+      };
+    }
+  </script>
+</body>
+</html>

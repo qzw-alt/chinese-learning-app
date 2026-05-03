@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>闪卡复习 — ChineseFlix</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body>
+
+  <header class="app-header">
+    <a class="back-btn" href="vocabulary.html">← 返回</a>
+    <span class="header-title">📚 闪卡复习</span>
+  </header>
+
+  <div class="page-container" x-data="reviewPage()" x-init="init()">
+
+    <!-- Setup: Choose mode & source -->
+    <div x-show="!started && !loading" class="review-setup">
+      <div style="font-size:3rem;margin-bottom:16px;">📚</div>
+      <div class="modal-title">准备复习</div>
+
+      <!-- Mode Select -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:8px;">复习模式</div>
+        <div class="mode-select">
+          <button class="mode-option" :class="{ active: mode === 'recognition' }" @click="mode = 'recognition'">
+            👀 看字想音
+          </button>
+          <button class="mode-option" :class="{ active: mode === 'production' }" @click="mode = 'production'">
+            ✍️ 看译写字
+          </button>
+          <button class="mode-option" :class="{ active: mode === 'listening' }" @click="mode = 'listening'">
+            🔊 听音识义
+          </button>
+        </div>
+      </div>
+
+      <!-- Source Select -->
+      <div style="margin-bottom:20px;">
+        <div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:8px;">复习内容</div>
+        <div class="mode-select">
+          <button class="mode-option" :class="{ active: source === 'vocab' }" @click="source = 'vocab'">
+            📝 生词本 (<span x-text="vocabBook.length"></span>)
+          </button>
+          <button class="mode-option" :class="{ active: source === 'video' }" @click="source = 'video'">
+            🎬 视频词汇 (<span x-text="videoVocab.length"></span>)
+          </button>
+        </div>
+      </div>
+
+      <!-- Due count -->
+      <div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:16px;">
+        待复习：<strong x-text="dueCards.length"></strong> 张
+      </div>
+
+      <button class="btn btn-primary btn-lg" @click="startReview" :disabled="dueCards.length === 0">
+        🚀 开始复习
+      </button>
+
+      <div x-show="dueCards.length === 0 && totalCards > 0" style="margin-top:12px;color:var(--success);font-size:0.85rem;">
+        🎉 暂时没有需要复习的卡片
+      </div>
+
+      <div x-show="totalCards === 0" style="margin-top:12px;color:var(--text-secondary);font-size:0.85rem;">
+        暂无词汇，先去收藏一些吧
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div x-show="loading" style="text-align:center;padding:40px;">
+      <div class="spinner"></div>
+      <div style="margin-top:12px;color:var(--text-secondary);">准备卡片中...</div>
+    </div>
+
+    <!-- Review Session -->
+    <div x-show="started">
+
+      <!-- Progress -->
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:0.85rem;color:var(--text-secondary);">
+        <span x-text="(currentIndex + 1) + ' / ' + sessionCards.length"></span>
+        <span x-text="'✅ ' + sessionCorrect + '  ❌ ' + sessionWrong"></span>
+      </div>
+
+      <!-- Card -->
+      <div class="review-card-container" @click="flipCard()">
+        <div class="review-card" :class="{ flipped: isFlipped }">
+          <!-- Front -->
+          <div class="review-card-front">
+            <template x-if="mode === 'recognition' || mode === 'listening'">
+              <div>
+                <div class="review-char" x-text="currentCard.char" x-show="mode === 'recognition'"></div>
+                <div x-show="mode === 'listening'" style="font-size:2rem;">🔊</div>
+              </div>
+            </template>
+            <template x-if="mode === 'production'">
+              <div class="review-meaning" x-text="currentCard.meaning || currentCard.pos || ''"></div>
+            </template>
+            <div class="review-hint">点击翻转查看答案</div>
+          </div>
+          <!-- Back -->
+          <div class="review-card-back">
+            <div class="review-char" x-text="currentCard.char"></div>
+            <div class="review-romanization" x-text="currentCard.romanization || currentCard.pinyin || ''"></div>
+            <div class="review-pos" x-text="currentCard.pos || ''"></div>
+            <div class="review-meaning" x-text="currentCard.meaning || ''"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grade Buttons -->
+      <div class="review-buttons" x-show="isFlipped">
+        <button class="review-btn review-btn-again" @click="grade(SRS.QUALITY.AGAIN)">
+          忘记<span class="review-btn-label">重来</span>
+        </button>
+        <button class="review-btn review-btn-hard" @click="grade(SRS.QUALITY.HARD)">
+          困难<span class="review-btn-label">想了很久</span>
+        </button>
+        <button class="review-btn review-btn-good" @click="grade(SRS.QUALITY.GOOD)">
+          良好<span class="review-btn-label">想起来了</span>
+        </button>
+        <button class="review-btn review-btn-easy" @click="grade(SRS.QUALITY.EASY)">
+          简单<span class="review-btn-label">秒答</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Session Complete -->
+    <div x-show="sessionDone" style="text-align:center;padding:32px 0;">
+      <div style="font-size:4rem;">🎉</div>
+      <div class="modal-title">复习完成！</div>
+      <div class="review-stats">
+        <div class="review-stat"><div class="rs-value" x-text="sessionCorrect"></div><div class="rs-label">正确</div></div>
+        <div class="review-stat"><div class="rs-value" x-text="sessionWrong"></div><div class="rs-label">需加强</div></div>
+        <div class="review-stat"><div class="rs-value" x-text="sessionXP"></div><div class="rs-label">XP</div></div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn btn-outline" @click="continueReview">再复习一轮</button>
+        <a class="btn btn-primary" href="vocabulary.html">返回生词本</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/srs.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    function reviewPage() {
+      return {
+        mode: 'recognition',
+        source: 'vocab',
+        started: false,
+        loading: true,
+        sessionDone: false,
+
+        // Session state
+        sessionCards: [],
+        currentIndex: 0,
+        isFlipped: false,
+        sessionCorrect: 0,
+        sessionWrong: 0,
+        sessionXP: 0,
+
+        // Card data
+        vocabBook: [],
+        videoVocab: [],
+        allCards: [],
+        srsData: {},
+
+        async init() {
+          Alpine.store('user').init();
+          this.vocabBook = Storage.getVocabBook();
+
+          // Gather all unique chars from subtitle data
+          const seen = new Set();
+          const videoWords = [];
+          for (const key of Object.keys(subtitlesData)) {
+            for (const sub of subtitlesData[key]) {
+              for (const char of sub.text) {
+                if (!/[一-鿿]/.test(char) || seen.has(char)) continue;
+                seen.add(char);
+                const v = getVocab(char, 'mandarin');
+                if (v) {
+                  videoWords.push({ char, ...v, romanization: v.pinyin || '' });
+                }
+              }
+            }
+          }
+          this.videoVocab = videoWords;
+          this.loading = false;
+        },
+
+        get totalCards() {
+          return this.source === 'vocab' ? this.vocabBook.length : this.videoVocab.length;
+        },
+
+        get dueCards() {
+          const cards = this.source === 'vocab' ? this.vocabBook : this.videoVocab;
+          return cards.map(c => {
+            const srs = this.srsData[c.char] || SRS.createCard(c.char, c);
+            return { ...c, ...srs };
+          }).filter(c => SRS.isDue(c));
+        },
+
+        get currentCard() {
+          return this.sessionCards[this.currentIndex] || {};
+        },
+
+        startReview() {
+          this.sessionCards = this.dueCards.slice(0, 20); // max 20 per session
+          if (this.sessionCards.length === 0) {
+            showToast('没有需要复习的卡片');
+            return;
+          }
+          this.currentIndex = 0;
+          this.isFlipped = false;
+          this.sessionCorrect = 0;
+          this.sessionWrong = 0;
+          this.sessionXP = 0;
+          this.started = true;
+          this.sessionDone = false;
+        },
+
+        flipCard() {
+          this.isFlipped = !this.isFlipped;
+        },
+
+        grade(quality) {
+          const card = this.sessionCards[this.currentIndex];
+          if (!card) return;
+
+          const updated = SRS.calculate(card, quality);
+          Object.assign(card, updated);
+          this.srsData[card.char] = updated;
+
+          if (quality >= SRS.QUALITY.HARD) {
+            this.sessionCorrect++;
+          } else {
+            this.sessionWrong++;
+          }
+
+          // Next card
+          if (this.currentIndex < this.sessionCards.length - 1) {
+            this.currentIndex++;
+            this.isFlipped = false;
+          } else {
+            // Session done
+            this.sessionXP = this.sessionCorrect * CONFIG.XP.REVIEW_CARD;
+            Alpine.store('user').addXP(this.sessionXP);
+            Storage.recordReview();
+            Alpine.store('user').earnBadge('review_100');
+
+            this.started = false;
+            this.sessionDone = true;
+          }
+        },
+
+        continueReview() {
+          this.sessionDone = false;
+          this.started = false;
+        },
+      };
+    }
+  </script>
+</body>
+</html>

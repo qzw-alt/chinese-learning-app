@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>生词本 — ChineseFlix</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body>
+
+  <header class="app-header">
+    <span class="logo">📖 生词本</span>
+    <div style="flex:1"></div>
+    <button class="btn btn-outline btn-sm" onclick="document.querySelector('[x-data]').__x.$data.exportCSV()">导出 CSV</button>
+  </header>
+
+  <div class="page-container" x-data="vocabPage()" x-init="init()">
+    <!-- Stats + Filter -->
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;flex-wrap:wrap;gap:8px;">
+      <span style="font-size:0.85rem;color:var(--text-secondary);" x-text="countText"></span>
+      <div style="display:flex;gap:6px;">
+        <button class="filter-btn btn-sm" :class="{ active: langFilter === 'all' }" @click="langFilter = 'all'">全部</button>
+        <button class="filter-btn btn-sm" :class="{ active: langFilter === 'mandarin' }" @click="langFilter = 'mandarin'">普通话</button>
+        <button class="filter-btn btn-sm" :class="{ active: langFilter === 'cantonese' }" @click="langFilter = 'cantonese'">粤语</button>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <input class="search-box" type="text" x-model="query" placeholder="搜索汉字、拼音/粤拼或释义...">
+
+    <!-- Empty State -->
+    <div x-show="book.length === 0" style="text-align:center;padding:48px 20px;">
+      <div style="font-size:3rem;margin-bottom:12px;">📖</div>
+      <div style="font-size:0.95rem;margin-bottom:4px;">还没有收藏任何单词</div>
+      <div style="font-size:0.8rem;color:var(--text-secondary);">看视频时点击字幕中的汉字即可收藏</div>
+    </div>
+
+    <!-- Search Empty -->
+    <div x-show="book.length > 0 && filtered.length === 0" style="text-align:center;padding:48px 20px;">
+      <div style="font-size:3rem;margin-bottom:12px;">🔍</div>
+      <div style="font-size:0.95rem;">没有找到匹配的单词</div>
+      <div style="font-size:0.8rem;color:var(--text-secondary);">试试其他关键词</div>
+    </div>
+
+    <!-- Vocab List -->
+    <template x-for="(w, idx) in filtered" :key="w.char">
+      <div class="vocab-card">
+        <div class="vc-char" x-text="w.char"></div>
+        <div class="vc-info">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span class="vc-pinyin" x-text="w.romanization || w.pinyin || ''"></span>
+            <span class="tag" :class="'tag-' + (w.language || 'mandarin')" style="font-size:0.65rem;"
+              x-text="(w.language === 'cantonese') ? '粤' : '普'"></span>
+          </div>
+          <div class="vc-detail" x-text="(w.pos || '') + '  ' + (w.meaning || '')"></div>
+          <div class="vc-source" x-text="w.source ? '📌 ' + formatSource(w.source) : ''"></div>
+        </div>
+        <button class="btn btn-danger btn-sm" @click="removeWord(w.char)">删除</button>
+      </div>
+    </template>
+
+    <!-- Review Button -->
+    <div x-show="book.length > 0" style="text-align:center;padding:20px 0;">
+      <a class="btn btn-primary btn-lg" href="review.html">📚 开始闪卡复习</a>
+    </div>
+  </div>
+
+  <!-- Bottom Tab Bar -->
+  <nav class="tab-bar">
+    <a class="tab-item" href="index.html"><span class="tab-icon">🏠</span>首页</a>
+    <a class="tab-item active" href="vocabulary.html"><span class="tab-icon">📖</span>生词</a>
+    <a class="tab-item" href="daily.html"><span class="tab-icon">🗣️</span>每日</a>
+    <a class="tab-item" href="profile.html"><span class="tab-icon">👤</span>我的</a>
+  </nav>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/components/ui.js"></script>
+  <script>
+    function vocabPage() {
+      return {
+        book: [],
+        query: '',
+        langFilter: 'all',
+
+        init() {
+          this.book = Storage.getVocabBook();
+          Alpine.store('user').init();
+        },
+
+        get filtered() {
+          let list = this.book;
+          if (this.langFilter !== 'all') {
+            list = list.filter(w => (w.language || 'mandarin') === this.langFilter);
+          }
+          if (this.query) {
+            const q = this.query.toLowerCase();
+            list = list.filter(w =>
+              w.char.includes(q) ||
+              (w.romanization || w.pinyin || '').toLowerCase().includes(q) ||
+              (w.meaning || '').toLowerCase().includes(q)
+            );
+          }
+          return list;
+        },
+
+        get countText() {
+          const total = this.book.length;
+          const showing = this.filtered.length;
+          return showing === total ? `共 ${total} 个单词` : `找到 ${showing} 个（共 ${total} 个）`;
+        },
+
+        removeWord(char) {
+          showConfirm(`确定要删除「${char}」吗？`).then(ok => {
+            if (ok) {
+              Storage.removeVocabWord(char);
+              this.book = Storage.getVocabBook();
+              showToast('已删除');
+            }
+          });
+        },
+
+        exportCSV() {
+          if (this.book.length === 0) { showToast('生词本为空'); return; }
+          const header = '汉字,拼音/粤拼,词性,释义,语种,来源';
+          const rows = this.book.map(w =>
+            `"${w.char}","${w.romanization || w.pinyin || ''}","${w.pos || ''}","${w.meaning || ''}","${w.language || 'mandarin'}","${w.source || ''}"`
+          );
+          const csv = [header, ...rows].join('\n');
+          const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url; a.download = 'chineseflix_vocab.csv'; a.click();
+          URL.revokeObjectURL(url);
+          showToast('导出成功');
+        },
+
+        formatSource(s) {
+          if (s.startsWith('sub-')) return '视频 #' + s.replace('sub-', '');
+          return s;
+        },
+      };
+    }
+  </script>
+</body>
+</html>

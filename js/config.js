@@ -4,8 +4,8 @@
 
 const CONFIG = {
   // Supabase (replace with your project credentials)
-  SUPABASE_URL: 'https://YOUR-PROJECT.supabase.co',
-  SUPABASE_ANON_KEY: 'YOUR-ANON-KEY',
+  SUPABASE_URL: 'https://tctwubsxomkcnulpahmj.supabase.co',
+  SUPABASE_ANON_KEY: 'sb_publishable_TZ70a5XtYVRUw1fH4oZWgw_gegpXi0b',
 
   // App
   APP_NAME: 'ChineseFlix',

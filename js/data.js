@@ -138,7 +138,7 @@ function getVocab(char, lang = 'mandarin') {
 /** Load videos from content JSON (falls back to hardcoded) */
 async function loadVideos() {
   try {
-    const res = await fetch('/content/videos.json');
+    const res = await fetch('./content/videos.json');
     if (res.ok) return await res.json();
   } catch (e) { /* fallback */ }
   return videos;
@@ -147,7 +147,7 @@ async function loadVideos() {
 /** Load subtitles from content JSON (falls back to hardcoded) */
 async function loadSubtitles(videoId) {
   try {
-    const res = await fetch(`/content/subtitles/${videoId}.json`);
+    const res = await fetch(`./content/subtitles/${videoId}.json`);
     if (res.ok) return await res.json();
   } catch (e) { /* fallback */ }
   return getSubtitles(videoId);
@@ -156,7 +156,7 @@ async function loadSubtitles(videoId) {
 /** Load daily sentences from content JSON */
 async function loadDailySentences() {
   try {
-    const res = await fetch('/content/daily-sentences.json');
+    const res = await fetch('./content/daily-sentences.json');
     if (res.ok) return await res.json();
   } catch (e) { /* fallback */ }
   return [];

@@ -36,8 +36,21 @@
       </div>
     </div>
 
+    <!-- Coming Soon -->
+    <div x-show="comingSoon" style="text-align:center;padding:48px 20px;">
+      <div style="font-size:3rem;margin-bottom:12px;">🚧</div>
+      <div style="font-size:1.1rem;font-weight:600;margin-bottom:8px;">即将上线</div>
+      <div style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:24px;max-width:320px;margin-left:auto;margin-right:auto;" x-text="video?.description || '该视频正在筹备中，敬请期待！'"></div>
+      <a href="index.html" class="btn btn-primary">← 返回首页</a>
+    </div>
+
     <!-- Content -->
-    <div x-show="!loading && !error">
+    <div x-show="!loading && !error && !comingSoon">
+
+      <!-- YouTube Availability Notice -->
+      <div id="youtubeNotice" style="display:none;background:#FFF3CD;color:#856404;padding:10px 16px;border-radius:var(--radius-sm);margin-bottom:12px;font-size:0.85rem;text-align:center;">
+        ⚠️ 您所在的地区可能无法直接播放 YouTube 视频，请使用网络工具或等待我们接入国内视频源。
+      </div>
 
       <!-- Video Player -->
       <div class="video-wrapper" id="playerContainer">
@@ -47,8 +60,8 @@
       <!-- Active line learning panel -->
       <section class="line-study-panel" x-show="activeSub">
         <div class="line-study-meta">
-          <span class="tag" :class="'tag-' + video.language">粤语主课</span>
-          <span x-text="video.scene || activeSub?.scene || '港片场景'"></span>
+          <span class="tag" :class="'tag-' + (video?.language || '')" x-text="video?.language === 'cantonese' ? '粤语主课' : '普通话主课'"></span>
+          <span x-text="video?.scene || activeSub?.scene || '港片场景'"></span>
           <span x-show="activeSub?.tone" x-text="activeSub?.tone"></span>
         </div>
 
@@ -114,12 +127,30 @@
   <script src="js/components/player.js"></script>
   <script src="js/components/subtitles.js"></script>
   <script>
+    // YouTube availability detection
+    (function() {
+      const img = new Image();
+      const timeout = setTimeout(() => {
+        img.src = '';
+        const notice = document.getElementById('youtubeNotice');
+        if (notice) notice.style.display = 'block';
+      }, 3000);
+      img.onload = () => clearTimeout(timeout);
+      img.onerror = () => {
+        clearTimeout(timeout);
+        const notice = document.getElementById('youtubeNotice');
+        if (notice) notice.style.display = 'block';
+      };
+      img.src = 'https://img.youtube.com/vi/SGS8sfH11yg/1.jpg?t=' + Date.now();
+    })();
+
     function watchPage() {
       return {
         video: null,
         subtitles: [],
         loading: true,
         error: '',
+        comingSoon: false,
         playerCtrl: null,
         subtitleMgr: null,
         activeSub: null,
@@ -135,8 +166,16 @@
           if (!v) { this.error = '视频未找到'; this.loading = false; return; }
           this.video = v;
 
+          if (v.comingSoon) {
+            this.comingSoon = true;
+            this.loading = false;
+            document.title = v.title + ' — ChineseFlix';
+            document.getElementById('videoTitle').textContent = v.title;
+            return;
+          }
+
           const subs = await loadSubtitles(videoId);
-          if (!subs.length) { this.error = '暂无字幕'; this.loading = false; return; }
+          if (!subs.length) { this.error = '该视频暂无字幕，我们正在努力制作中，敬请期待！'; this.loading = false; return; }
           this.subtitles = subs;
           this.activeSub = subs[0] || null;
 

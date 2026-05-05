@@ -1,0 +1,12 @@
+[
+  { "id": 1, "start": 2.0, "end": 5.5, "text": "大家好，我叫李明。", "pinyin": "dà jiā hǎo, wǒ jiào Lǐ Míng.", "translation": "Hello everyone, my name is Li Ming." },
+  { "id": 2, "start": 6.0, "end": 9.5, "text": "我是中国人，来自北京。", "pinyin": "wǒ shì Zhōng guó rén, lái zì Běi jīng.", "translation": "I am Chinese, from Beijing." },
+  { "id": 3, "start": 10.0, "end": 13.5, "text": "今年二十五岁，是一名老师。", "pinyin": "jīn nián èr shí wǔ suì, shì yì míng lǎo shī.", "translation": "I am 25 years old this year, and I am a teacher." },
+  { "id": 4, "start": 14.0, "end": 17.5, "text": "我在大学教中文，已经教了三年了。", "pinyin": "wǒ zài dà xué jiāo Zhōng wén, yǐ jing jiāo le sān nián le.", "translation": "I teach Chinese at a university. I have been teaching for three years." },
+  { "id": 5, "start": 18.0, "end": 21.5, "text": "我的爱好是看书和旅行。", "pinyin": "wǒ de ài hào shì kàn shū hé lǚ xíng.", "translation": "My hobbies are reading and traveling." },
+  { "id": 6, "start": 22.0, "end": 25.5, "text": "我去过很多国家，最喜欢日本。", "pinyin": "wǒ qù guo hěn duō guó jiā, zuì xǐ huān Rì běn.", "translation": "I have been to many countries. I like Japan the most." },
+  { "id": 7, "start": 26.0, "end": 29.5, "text": "我会说中文和英文，正在学西班牙语。", "pinyin": "wǒ huì shuō Zhōng wén hé Yīng wén, zhèng zài xué Xī bān yá yǔ.", "translation": "I can speak Chinese and English, and I am learning Spanish." },
+  { "id": 8, "start": 30.0, "end": 33.5, "text": "我的性格比较外向，喜欢交朋友。", "pinyin": "wǒ de xìng gé bǐ jiào wài xiàng, xǐ huān jiāo péng you.", "translation": "I am quite outgoing and like to make friends." },
+  { "id": 9, "start": 34.0, "end": 37.5, "text": "很高兴认识你们，希望我们可以成为好朋友。", "pinyin": "hěn gāo xìng rèn shi nǐ men, xī wàng wǒ men kě yǐ chéng wéi hǎo péng you.", "translation": "Nice to meet you all. I hope we can become good friends." },
+  { "id": 10, "start": 38.0, "end": 41.0, "text": "谢谢大家的聆听！", "pinyin": "xiè xiè dà jiā de líng tīng!", "translation": "Thank you all for listening!" }
+]

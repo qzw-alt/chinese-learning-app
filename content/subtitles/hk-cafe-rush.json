@@ -100,5 +100,208 @@
       { "word": "得", "meaning": "行 / 可以", "type": "回应" },
       { "word": "催一催", "meaning": "催一下", "type": "处理问题" }
     ]
+  },
+  {
+    "id": 7,
+    "start": 28.0,
+    "end": 32.0,
+    "text": "喂，三号台杯冻奶茶仲未出？",
+    "cantonese": "喂，三号台杯冻奶茶仲未出？",
+    "jyutping": "wai3, saam1 hou6 toi4 bui1 dung3 naai5 caa4 zung6 mei6 ceot1?",
+    "mandarin": "喂，三号桌的冰奶茶还没出吗？",
+    "english": "Hey, table three's iced milk tea isn't out yet?",
+    "translation": "Hey, table three's iced milk tea isn't out yet?",
+    "tone": "催促 / 内部沟通",
+    "scene": "服务员催厨房",
+    "notes": [
+      { "word": "仲未", "meaning": "还没", "type": "时间状态" },
+      { "word": "出", "meaning": "出餐", "type": "餐饮用语" }
+    ]
+  },
+  {
+    "id": 8,
+    "start": 32.5,
+    "end": 36.0,
+    "text": "嚟紧啦，你同客人讲声对唔住先。",
+    "cantonese": "嚟紧啦，你同客人讲声对唔住先。",
+    "jyutping": "lai4 gan2 laa1, nei5 tung4 haak3 jan4 gong2 seng1 deoi3 m4 zyu6 sin1.",
+    "mandarin": "马上来了，你先跟客人说声对不起。",
+    "english": "It's coming. Go apologize to the customer first.",
+    "translation": "It's coming. Go apologize to the customer first.",
+    "tone": "交代 / 安抚",
+    "scene": "厨房回应",
+    "notes": [
+      { "word": "嚟紧", "meaning": "马上来", "type": "进行中" },
+      { "word": "讲声对唔住", "meaning": "说声对不起", "type": "道歉" }
+    ]
+  },
+  {
+    "id": 9,
+    "start": 36.5,
+    "end": 40.0,
+    "text": "先生，真系唔好意思，请饮多杯柠檬茶。",
+    "cantonese": "先生，真系唔好意思，请饮多杯柠檬茶。",
+    "jyutping": "sin1 saang1, zan1 hai6 m4 hou2 ji3 si1, ceng2 jam2 do1 bui1 ning4 mung4 caa4.",
+    "mandarin": "先生，真的很抱歉，请再喝杯柠檬茶。",
+    "english": "Sir, we are truly sorry. Please have another lemon tea on us.",
+    "translation": "Sir, we are truly sorry. Please have another lemon tea on us.",
+    "tone": "道歉 / 补偿",
+    "scene": "服务员赔偿",
+    "notes": [
+      { "word": "请饮", "meaning": "请喝", "type": "请客" },
+      { "word": "柠檬茶", "meaning": "柠檬茶", "type": "饮品" }
+    ]
+  },
+  {
+    "id": 10,
+    "start": 40.5,
+    "end": 44.0,
+    "text": "算啦，唔该快啲上我个公仔面。",
+    "cantonese": "算啦，唔该快啲上我个公仔面。",
+    "jyutping": "syun3 laa1, m4 goi1 faai3 di1 soeng6 ngo5 go3 gung1 zai2 min6.",
+    "mandarin": "算了，麻烦快点上我的方便面。",
+    "english": "Forget it. Just please bring my instant noodles quickly.",
+    "translation": "Forget it. Just please bring my instant noodles quickly.",
+    "tone": "让步 / 再次催促",
+    "scene": "顾客妥协",
+    "notes": [
+      { "word": "算啦", "meaning": "算了", "type": "让步" },
+      { "word": "公仔面", "meaning": "方便面", "type": "港式用语" }
+    ]
+  },
+  {
+    "id": 11,
+    "start": 44.5,
+    "end": 48.0,
+    "text": "即刻到！冻奶茶同公仔面，係咪？",
+    "cantonese": "即刻到！冻奶茶同公仔面，係咪？",
+    "jyutping": "zik1 haak1 dou3! dung3 naai5 caa4 tung4 gung1 zai2 min6, hai6 mai4?",
+    "mandarin": "马上到！冰奶茶和方便面，对吗？",
+    "english": "Right away! Iced milk tea and instant noodles, right?",
+    "translation": "Right away! Iced milk tea and instant noodles, right?",
+    "tone": "确认 / 加快",
+    "scene": "服务员确认",
+    "notes": [
+      { "word": "即刻", "meaning": "马上", "type": "紧急" },
+      { "word": "係咪", "meaning": "是不是 / 对吗", "type": "确认" }
+    ]
+  },
+  {
+    "id": 12,
+    "start": 48.5,
+    "end": 52.0,
+    "text": "係啊，仲要多份西多士，走甜。",
+    "cantonese": "係啊，仲要多份西多士，走甜。",
+    "jyutping": "hai6 aa3, zung6 jiu3 do1 fan6 sai1 do1 si6, zau2 tim4.",
+    "mandarin": "是的，还要多一份西多士，不要甜的。",
+    "english": "Yes, and one more French toast, no syrup.",
+    "translation": "Yes, and one more French toast, no syrup.",
+    "tone": "补充点单",
+    "scene": "追加订单",
+    "notes": [
+      { "word": "西多士", "meaning": "法式吐司", "type": "港式美食" },
+      { "word": "走甜", "meaning": "不要糖 / 少甜", "type": "饮食要求" }
+    ]
+  },
+  {
+    "id": 13,
+    "start": 52.5,
+    "end": 56.0,
+    "text": "好，总共八十五蚊，先俾定钱？",
+    "cantonese": "好，总共八十五蚊，先俾定钱？",
+    "jyutping": "hou2, zung2 gung6 baat3 sap6 ng5 man1, sin1 bei2 ding6 cin2?",
+    "mandarin": "好，一共八十五块，先付钱吗？",
+    "english": "OK, 85 dollars total. Pay now?",
+    "translation": "OK, 85 dollars total. Pay now?",
+    "tone": "结账",
+    "scene": "服务员结账",
+    "notes": [
+      { "word": "蚊", "meaning": "元 / 块", "type": "粤语货币单位" },
+      { "word": "俾定钱", "meaning": "先付钱", "type": "结账" }
+    ]
+  },
+  {
+    "id": 14,
+    "start": 56.5,
+    "end": 60.0,
+    "text": "俾啦，唔该找十五蚊我。",
+    "cantonese": "俾啦，唔该找十五蚊我。",
+    "jyutping": "bei2 laa1, m4 goi1 zaau2 sap6 ng5 man1 ngo5.",
+    "mandarin": "给了，麻烦找我十五块。",
+    "english": "Here. Please give me 15 dollars change.",
+    "translation": "Here. Please give me 15 dollars change.",
+    "tone": "付款",
+    "scene": "顾客付款",
+    "notes": [
+      { "word": "俾", "meaning": "给", "type": "动词" },
+      { "word": "找", "meaning": "找零", "type": "结账" }
+    ]
+  },
+  {
+    "id": 15,
+    "start": 60.5,
+    "end": 64.0,
+    "text": "收你一佰，找十五，多谢帮衬。",
+    "cantonese": "收你一佰，找十五，多谢帮衬。",
+    "jyutping": "sau1 nei5 jat1 baak3, zaau2 sap6 ng5, do1 ze6 bong1 can3.",
+    "mandarin": "收你一百，找十五，多谢惠顾。",
+    "english": "100 received, 15 change. Thanks for your patronage.",
+    "translation": "100 received, 15 change. Thanks for your patronage.",
+    "tone": "礼貌 / 结束",
+    "scene": "服务员收款",
+    "notes": [
+      { "word": "帮衬", "meaning": "光顾 / 惠顾", "type": "商业礼貌用语" }
+    ]
+  },
+  {
+    "id": 16,
+    "start": 64.5,
+    "end": 68.0,
+    "text": "食完喇，环境一般，但味道ok嘅。",
+    "cantonese": "食完喇，环境一般，但味道ok嘅。",
+    "jyutping": "sik6 jyun4 laa3, waan4 ging2 jat1 bun1, daan6 mei6 dou6 ok1 ge3.",
+    "mandarin": "吃完了，环境一般，但味道还可以。",
+    "english": "Finished eating. The environment is average, but the taste is OK.",
+    "translation": "Finished eating. The environment is average, but the taste is OK.",
+    "tone": "评价 / 总结",
+    "scene": "顾客评价",
+    "notes": [
+      { "word": "食完", "meaning": "吃完", "type": "完成" },
+      { "word": "ok嘅", "meaning": "还可以的", "type": "口语评价" }
+    ]
+  },
+  {
+    "id": 17,
+    "start": 68.5,
+    "end": 72.0,
+    "text": "下次早啲嚟就唔使等咁耐喇。",
+    "cantonese": "下次早啲嚟就唔使等咁耐喇。",
+    "jyutping": "haa6 ci3 zou2 di1 lai4 zau6 m4 sai2 dang2 gam3 noi6 laa3.",
+    "mandarin": "下次早点来就不用等这么久了。",
+    "english": "Come earlier next time and you won't have to wait so long.",
+    "translation": "Come earlier next time and you won't have to wait so long.",
+    "tone": "建议 / 道别",
+    "scene": "服务员送别",
+    "notes": [
+      { "word": "早啲", "meaning": "早一点", "type": "建议" },
+      { "word": "唔使", "meaning": "不用", "type": "否定" }
+    ]
+  },
+  {
+    "id": 18,
+    "start": 72.5,
+    "end": 76.0,
+    "text": "知道喇，走先，拜拜！",
+    "cantonese": "知道喇，走先，拜拜！",
+    "jyutping": "zi1 dou3 laa3, zau2 sin1, baai1 baai1!",
+    "mandarin": "知道了，先走了，拜拜！",
+    "english": "Got it. Gotta go. Bye!",
+    "translation": "Got it. Gotta go. Bye!",
+    "tone": "道别",
+    "scene": "离开",
+    "notes": [
+      { "word": "走先", "meaning": "先走", "type": "道别" },
+      { "word": "拜拜", "meaning": "再见", "type": "外来语" }
+    ]
   }
 ]

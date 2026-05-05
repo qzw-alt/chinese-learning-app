@@ -55,6 +55,7 @@
   {
     "id": "shopping-clothes",
     "source": "mp4",
+    "comingSoon": true,
     "sourceId": null,
     "sourceUrl": null,
     "title": "买衣服 — Shopping for Clothes",
@@ -68,6 +69,7 @@
   {
     "id": "job-interview",
     "source": "mp4",
+    "comingSoon": true,
     "sourceId": null,
     "sourceUrl": null,
     "title": "求职面试 — Job Interview in Chinese",
@@ -94,6 +96,7 @@
   {
     "id": "cantonese-dimsum",
     "source": "mp4",
+    "comingSoon": true,
     "sourceId": null,
     "sourceUrl": null,
     "title": "粤式茶楼 — Dim Sum Ordering",
@@ -120,6 +123,7 @@
   {
     "id": "doctor-visit",
     "source": "mp4",
+    "comingSoon": true,
     "sourceId": null,
     "sourceUrl": null,
     "title": "看病 — Seeing a Doctor",

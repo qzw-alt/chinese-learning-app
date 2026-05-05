@@ -1,0 +1,20 @@
+[
+  { "id": 1, "start": 2.0, "end": 5.5, "text": "您好，请问几位？", "pinyin": "nín hǎo, qǐng wèn jǐ wèi?", "translation": "Hello, how many people?" },
+  { "id": 2, "start": 6.0, "end": 9.0, "text": "两位，有靠窗的位置吗？", "pinyin": "liǎng wèi, yǒu kào chuāng de wèi zhi ma?", "translation": "Two. Do you have a table by the window?" },
+  { "id": 3, "start": 9.5, "end": 13.0, "text": "有的，这边请。", "pinyin": "yǒu de, zhè biān qǐng.", "translation": "Yes, right this way." },
+  { "id": 4, "start": 14.0, "end": 18.0, "text": "谢谢。请给我们菜单。", "pinyin": "xiè xiè. qǐng gěi wǒ men cài dān.", "translation": "Thank you. Please give us the menu." },
+  { "id": 5, "start": 18.5, "end": 22.0, "text": "好的，这是菜单，今天有特价鱼。", "pinyin": "hǎo de, zhè shì cài dān, jīn tiān yǒu tè jià yú.", "translation": "OK, here is the menu. Today we have a special on fish." },
+  { "id": 6, "start": 23.0, "end": 27.0, "text": "太好了，我想尝尝你们的水煮鱼。", "pinyin": "tài hǎo le, wǒ xiǎng cháng chang nǐ men de shuǐ zhǔ yú.", "translation": "Great. I would like to try your boiled fish." },
+  { "id": 7, "start": 27.5, "end": 31.0, "text": "好的，要微辣还是中辣？", "pinyin": "hǎo de, yào wēi là hái shì zhōng là?", "translation": "OK. Mild or medium spicy?" },
+  { "id": 8, "start": 31.5, "end": 34.5, "text": "微辣吧，我不太能吃辣。", "pinyin": "wēi là ba, wǒ bú tài néng chī là.", "translation": "Mild, please. I can't eat very spicy food." },
+  { "id": 9, "start": 35.0, "end": 39.0, "text": "再来一个宫保鸡丁和一盘青菜。", "pinyin": "zài lái yí gè gōng bǎo jī dīng hé yì pán qīng cài.", "translation": "Also a Kung Pao chicken and a plate of greens." },
+  { "id": 10, "start": 39.5, "end": 43.0, "text": "好的，请问喝什么？", "pinyin": "hǎo de, qǐng wèn hē shén me?", "translation": "OK. What would you like to drink?" },
+  { "id": 11, "start": 43.5, "end": 47.0, "text": "我要一杯冰红茶，他要一瓶啤酒。", "pinyin": "wǒ yào yì bēi bīng hóng chá, tā yào yì píng pí jiǔ.", "translation": "I'll have an iced black tea, and he'll have a beer." },
+  { "id": 12, "start": 47.5, "end": 51.0, "text": "好的，请稍等，菜马上来。", "pinyin": "hǎo de, qǐng shāo děng, cài mǎ shàng lái.", "translation": "OK. Please wait a moment. The food will be ready soon." },
+  { "id": 13, "start": 52.0, "end": 56.0, "text": "这道菜真好吃，味道很正宗。", "pinyin": "zhè dào cài zhēn hǎo chī, wèi dào hěn zhèng zōng.", "translation": "This dish is delicious. The taste is very authentic." },
+  { "id": 14, "start": 56.5, "end": 60.0, "text": "是啊，我也觉得不错。", "pinyin": "shì a, wǒ yě jué de bú cuò.", "translation": "Yes, I think so too." },
+  { "id": 15, "start": 61.0, "end": 65.0, "text": "服务员，买单！", "pinyin": "fú wù yuán, mǎi dān!", "translation": "Waiter, check please!" },
+  { "id": 16, "start": 65.5, "end": 69.0, "text": "一共一百六十八块。", "pinyin": "yí gòng yì bǎi liù shí bā kuài.", "translation": "168 yuan in total." },
+  { "id": 17, "start": 69.5, "end": 73.0, "text": "给你两百，不用找了。", "pinyin": "gěi nǐ liǎng bǎi, bú yòng zhǎo le.", "translation": "Here's 200. Keep the change." },
+  { "id": 18, "start": 73.5, "end": 77.0, "text": "谢谢，欢迎下次光临！", "pinyin": "xiè xiè, huān yíng xià cì guāng lín!", "translation": "Thank you. Welcome back next time!" }
+]

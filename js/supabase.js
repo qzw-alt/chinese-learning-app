@@ -3,14 +3,18 @@
    ======================================== */
 
 // Initialize Supabase client (lazy, after config loads)
-let supabase = null;
+let _supabaseClient = null;
 
 function getSupabase() {
-  if (!supabase) {
-    const { createClient } = supabaseJs;
-    supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+  if (!_supabaseClient) {
+    const client = window.supabase?.createClient || supabaseJs?.createClient;
+    if (!client) {
+      console.warn('Supabase client not available');
+      return null;
+    }
+    _supabaseClient = client(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
   }
-  return supabase;
+  return _supabaseClient;
 }
 
 const SupabaseAuth = {

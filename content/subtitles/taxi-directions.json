@@ -1,0 +1,16 @@
+[
+  { "id": 1, "start": 2.0, "end": 5.5, "text": "师傅，去火车站多少钱？", "pinyin": "shī fu, qù huǒ chē zhàn duō shǎo qián?", "translation": "Driver, how much to the train station?" },
+  { "id": 2, "start": 6.0, "end": 9.5, "text": "打表走，大概三十块左右。", "pinyin": "dǎ biǎo zǒu, dà gài sān shí kuài zuǒ yòu.", "translation": "By meter, about 30 yuan or so." },
+  { "id": 3, "start": 10.0, "end": 13.0, "text": "好的，麻烦您快一点，我赶时间。", "pinyin": "hǎo de, má fan nín kuài yì diǎn, wǒ gǎn shí jiān.", "translation": "OK. Please hurry a bit. I am in a rush." },
+  { "id": 4, "start": 13.5, "end": 16.5, "text": "没问题，大概二十分钟能到。", "pinyin": "méi wèn tí, dà gài èr shí fēn zhōng néng dào.", "translation": "No problem. We can get there in about 20 minutes." },
+  { "id": 5, "start": 17.0, "end": 20.5, "text": "请问附近有没有地铁站？", "pinyin": "qǐng wèn fù jìn yǒu méi yǒu dì tiě zhàn?", "translation": "Excuse me, is there a subway station nearby?" },
+  { "id": 6, "start": 21.0, "end": 24.5, "text": "有，前面路口右转就有一家。", "pinyin": "yǒu, qián miàn lù kǒu yòu zhuǎn jiù yǒu yì jiā.", "translation": "Yes. Turn right at the intersection up ahead and there is one." },
+  { "id": 7, "start": 25.0, "end": 28.5, "text": "那请问医院怎么走？", "pinyin": "nà qǐng wèn yī yuàn zěn me zǒu?", "translation": "Then how do I get to the hospital?" },
+  { "id": 8, "start": 29.0, "end": 32.5, "text": "你一直往前走，第三个红绿灯左转。", "pinyin": "nǐ yì zhí wǎng qián zǒu, dì sān gè hóng lǜ dēng zuǒ zhuǎn.", "translation": "Go straight ahead, then turn left at the third traffic light." },
+  { "id": 9, "start": 33.0, "end": 36.5, "text": "远不远？走路要多久？", "pinyin": "yuǎn bù yuǎn? zǒu lù yào duō jiǔ?", "translation": "Is it far? How long on foot?" },
+  { "id": 10, "start": 37.0, "end": 40.5, "text": "不远，大概走十分钟就到了。", "pinyin": "bù yuǎn, dà gài zǒu shí fēn zhōng jiù dào le.", "translation": "Not far. About a 10-minute walk." },
+  { "id": 11, "start": 41.0, "end": 44.5, "text": "师傅，就在这里停吧，我到了。", "pinyin": "shī fu, jiù zài zhè lǐ tíng ba, wǒ dào le.", "translation": "Driver, please stop here. I have arrived." },
+  { "id": 12, "start": 45.0, "end": 48.0, "text": "好的，一共二十八块。", "pinyin": "hǎo de, yí gòng èr shí bā kuài.", "translation": "OK. 28 yuan in total." },
+  { "id": 13, "start": 48.5, "end": 52.0, "text": "给您三十，不用找了，谢谢！", "pinyin": "gěi nín sān shí, bú yòng zhǎo le, xiè xiè!", "translation": "Here's 30. Keep the change. Thank you!" },
+  { "id": 14, "start": 52.5, "end": 55.0, "text": "谢谢，慢走！", "pinyin": "xiè xiè, màn zǒu!", "translation": "Thank you. Take care!" }
+]

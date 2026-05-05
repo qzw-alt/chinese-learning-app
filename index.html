@@ -78,14 +78,17 @@
     <!-- Video Grid -->
     <div class="video-grid" x-show="!loading && filtered.length > 0">
       <template x-for="v in filtered" :key="v.id">
-        <div class="card video-card" @click="goTo('watch.html?id=' + v.id)">
+        <div class="card video-card" :class="{ 'coming-soon': v.comingSoon }" @click="goTo('watch.html?id=' + v.id)">
           <div class="card-img-wrapper">
             <img class="card-img"
-              :src="v.thumbnail || 'https://img.youtube.com/vi/' + v.sourceId + '/hqdefault.jpg'"
+              :src="v.thumbnail || (v.sourceId ? 'https://img.youtube.com/vi/' + v.sourceId + '/hqdefault.jpg' : '')"
               :alt="v.title" loading="lazy"
               @error="v.thumbnail = null; $el.src = ''; $el.parentElement.classList.add('no-thumb')">
             <div class="card-img-tag tag" :class="'tag-' + v.language" x-text="v.language === 'cantonese' ? '粤' : '普'"></div>
             <div class="card-duration" x-text="v.duration"></div>
+            <div class="coming-soon-overlay" x-show="v.comingSoon">
+              <span>即将上线</span>
+            </div>
           </div>
           <div class="card-body">
             <div class="card-title" x-text="v.title"></div>

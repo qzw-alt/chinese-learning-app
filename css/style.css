@@ -748,6 +748,35 @@ audio {
   font-family: var(--font-en);
 }
 
+/* ---------- Coming Soon Overlay ---------- */
+.coming-soon-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+}
+
+.coming-soon-overlay span {
+  background: rgba(255,255,255,0.95);
+  color: var(--secondary);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.video-card.coming-soon {
+  cursor: default;
+}
+
+.video-card.coming-soon .card-img {
+  filter: grayscale(0.6);
+}
+
 /* ---------- Speed Control ---------- */
 .speed-control {
   display: flex;

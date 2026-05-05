@@ -1,0 +1,14 @@
+[
+  { "id": 1, "start": 2.0, "end": 5.5, "text": "今天天气真好啊！", "pinyin": "jīn tiān tiān qì zhēn hǎo a!", "translation": "The weather is really nice today!" },
+  { "id": 2, "start": 6.0, "end": 9.0, "text": "是啊，阳光明媚，不冷不热。", "pinyin": "shì a, yáng guāng míng mèi, bù lěng bú rè.", "translation": "Yes, the sun is shining. Not cold, not hot." },
+  { "id": 3, "start": 9.5, "end": 13.0, "text": "听说明天会下雨，你带伞了吗？", "pinyin": "tīng shuō míng tiān huì xià yǔ, nǐ dài sǎn le ma?", "translation": "I heard it will rain tomorrow. Did you bring an umbrella?" },
+  { "id": 4, "start": 13.5, "end": 16.5, "text": "没带，希望明天雨不要太大。", "pinyin": "méi dài, xī wàng míng tiān yǔ bú yào tài dà.", "translation": "I didn't. I hope the rain won't be too heavy tomorrow." },
+  { "id": 5, "start": 17.0, "end": 20.5, "text": "最近天气变化太快了，昨天还很冷。", "pinyin": "zuì jìn tiān qì biàn huà tài kuài le, zuó tiān hái hěn lěng.", "translation": "The weather has been changing too fast lately. It was still cold yesterday." },
+  { "id": 6, "start": 21.0, "end": 24.5, "text": "对啊，春天就是这样，忽冷忽热的。", "pinyin": "duì a, chūn tiān jiù shì zhè yàng, hū lěng hū rè de.", "translation": "Right. Spring is just like this, suddenly cold, suddenly hot." },
+  { "id": 7, "start": 25.0, "end": 28.5, "text": "你最喜欢哪个季节？", "pinyin": "nǐ zuì xǐ huān nǎ gè jì jié?", "translation": "Which season do you like the most?" },
+  { "id": 8, "start": 29.0, "end": 32.5, "text": "我最喜欢秋天，天气凉爽，风景也很美。", "pinyin": "wǒ zuì xǐ huān qiū tiān, tiān qì liáng shuǎng, fēng jǐng yě hěn měi.", "translation": "I like autumn the most. The weather is cool and the scenery is beautiful too." },
+  { "id": 9, "start": 33.0, "end": 36.5, "text": "秋天确实不错，但是太短了。", "pinyin": "qiū tiān què shí bú cuò, dàn shì tài duǎn le.", "translation": "Autumn is indeed nice, but it is too short." },
+  { "id": 10, "start": 37.0, "end": 40.5, "text": "夏天太热了，冬天又太冷。", "pinyin": "xià tiān tài rè le, dōng tiān yòu tài lěng.", "translation": "Summer is too hot, and winter is too cold." },
+  { "id": 11, "start": 41.0, "end": 44.5, "text": "听说下周会降温，你要多穿点衣服。", "pinyin": "tīng shuō xià zhōu huì jiàng wēn, nǐ yào duō chuān diǎn yī fu.", "translation": "I heard the temperature will drop next week. You should wear more clothes." },
+  { "id": 12, "start": 45.0, "end": 48.0, "text": "好的，谢谢提醒！", "pinyin": "hǎo de, xiè xiè tí xǐng!", "translation": "OK, thanks for the reminder!" }
+]

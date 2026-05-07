@@ -133,5 +133,19 @@
     "language": "mandarin",
     "description": "在医院看病的完整对话。学习描述症状、挂号、买药等就医必需的实用表达。",
     "thumbnail": null
+  },
+  {
+    "id": "cantonese-meeting",
+    "source": "youtube",
+    "sourceId": "9QhmQ1JSKMs",
+    "sourceUrl": null,
+    "title": "如何用广东话打招呼 — 会面问候",
+    "subtitle_cn": "基础粤语：日常问候对话",
+    "duration": "3:00",
+    "difficulty": "beginner",
+    "language": "cantonese",
+    "scene": "日常会面",
+    "description": "学习用广东话打招呼和简单问候。包含早晨、你好、食咗饭未等实用表达。",
+    "thumbnail": null
   }
 ]

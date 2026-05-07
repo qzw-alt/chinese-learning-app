@@ -1,0 +1,185 @@
+[
+  {
+    "id": 1,
+    "start": 2.0,
+    "end": 5.0,
+    "text": "早晨！",
+    "cantonese": "早晨！",
+    "jyutping": "zou2 san4!",
+    "mandarin": "早上好！",
+    "english": "Good morning!",
+    "translation": "Good morning!",
+    "tone": "热情 / 问候",
+    "scene": "路上遇到朋友",
+    "notes": [
+      { "word": "早晨", "meaning": "早上好（粤语特有问候）", "type": "日常问候" }
+    ]
+  },
+  {
+    "id": 2,
+    "start": 5.5,
+    "end": 9.5,
+    "text": "早晨！你今日点啊？",
+    "cantonese": "早晨！你今日点啊？",
+    "jyutping": "zou2 san4! nei5 gam1 jat6 dim2 aa3?",
+    "mandarin": "早上好！你今天怎么样？",
+    "english": "Good morning! How are you today?",
+    "translation": "Good morning! How are you today?",
+    "tone": "关心 / 问候",
+    "scene": "回礼问候",
+    "notes": [
+      { "word": "今日", "meaning": "今天", "type": "时间词" },
+      { "word": "点啊", "meaning": "怎么样", "type": "问候用语" }
+    ]
+  },
+  {
+    "id": 3,
+    "start": 10.0,
+    "end": 14.0,
+    "text": "我好好啊，你呢？",
+    "cantonese": "我好好啊，你呢？",
+    "jyutping": "ngo5 hou2 hou2 aa3, nei5 ne1?",
+    "mandarin": "我很好，你呢？",
+    "english": "I'm very well, and you?",
+    "translation": "I'm very well, and you?",
+    "tone": "回应 / 反问",
+    "scene": "回答问候",
+    "notes": [
+      { "word": "好好", "meaning": "很好", "type": "形容词" },
+      { "word": "你呢", "meaning": "你呢", "type": "反问" }
+    ]
+  },
+  {
+    "id": 4,
+    "start": 14.5,
+    "end": 19.5,
+    "text": "我都几好。食咗早餐未？",
+    "cantonese": "我都几好。食咗早餐未？",
+    "jyutping": "ngo5 dou1 gei2 hou2. sik6 zo2 zou2 caan1 mei6?",
+    "mandarin": "我也还好。吃早餐了吗？",
+    "english": "I'm OK too. Have you had breakfast?",
+    "translation": "I'm OK too. Have you had breakfast?",
+    "tone": "关心 / 寒暄",
+    "scene": "日常寒暄",
+    "notes": [
+      { "word": "几好", "meaning": "还好 / 挺不错的", "type": "口语" },
+      { "word": "食咗", "meaning": "吃了", "type": "完成时态" },
+      { "word": "未", "meaning": "没有（疑问用）", "type": "语气词" }
+    ]
+  },
+  {
+    "id": 5,
+    "start": 20.0,
+    "end": 23.5,
+    "text": "食咗啦。你呢？",
+    "cantonese": "食咗啦。你呢？",
+    "jyutping": "sik6 zo2 laa1. nei5 ne1?",
+    "mandarin": "吃过了。你呢？",
+    "english": "Yes, I have. And you?",
+    "translation": "Yes, I have. And you?",
+    "tone": "简短回应",
+    "scene": "回答",
+    "notes": [
+      { "word": "啦", "meaning": "了（语气助词）", "type": "语气词" }
+    ]
+  },
+  {
+    "id": 6,
+    "start": 24.0,
+    "end": 29.0,
+    "text": "我都食咗。你而家去边度啊？",
+    "cantonese": "我都食咗。你而家去边度啊？",
+    "jyutping": "ngo5 dou1 sik6 zo2. nei5 ji4 gaa1 heoi3 bin1 dou6 aa3?",
+    "mandarin": "我也吃了。你现在去哪里？",
+    "english": "I have too. Where are you going now?",
+    "translation": "I have too. Where are you going now?",
+    "tone": "闲聊 / 好奇",
+    "scene": "继续寒暄",
+    "notes": [
+      { "word": "而家", "meaning": "现在", "type": "时间词" },
+      { "word": "边度", "meaning": "哪里", "type": "疑问词" }
+    ]
+  },
+  {
+    "id": 7,
+    "start": 29.5,
+    "end": 34.0,
+    "text": "我返工啊。你呢？",
+    "cantonese": "我返工啊。你呢？",
+    "jyutping": "ngo5 faan1 gung1 aa3. nei5 ne1?",
+    "mandarin": "我上班啊。你呢？",
+    "english": "I'm going to work. And you?",
+    "translation": "I'm going to work. And you?",
+    "tone": "回答 / 反问",
+    "scene": "说明去向",
+    "notes": [
+      { "word": "返工", "meaning": "上班", "type": "日常用语" }
+    ]
+  },
+  {
+    "id": 8,
+    "start": 34.5,
+    "end": 38.5,
+    "text": "我去买嘢。",
+    "cantonese": "我去买嘢。",
+    "jyutping": "ngo5 heoi3 maai5 je5.",
+    "mandarin": "我去买东西。",
+    "english": "I'm going shopping.",
+    "translation": "I'm going shopping.",
+    "tone": "回答",
+    "scene": "说明去向",
+    "notes": [
+      { "word": "买嘢", "meaning": "买东西", "type": "日常用语" }
+    ]
+  },
+  {
+    "id": 9,
+    "start": 39.0,
+    "end": 43.5,
+    "text": "哦，咁你忙先啦。",
+    "cantonese": "哦，咁你忙先啦。",
+    "jyutping": "o4, gam2 nei5 mong4 sin1 laa1.",
+    "mandarin": "哦，那你先忙吧。",
+    "english": "Oh, then you go ahead. I'll let you go.",
+    "translation": "Oh, then you go ahead. I'll let you go.",
+    "tone": "体谅 / 道别铺垫",
+    "scene": "准备道别",
+    "notes": [
+      { "word": "咁", "meaning": "那么 / 这样", "type": "连词" },
+      { "word": "忙先", "meaning": "先忙", "type": "告别用语" }
+    ]
+  },
+  {
+    "id": 10,
+    "start": 44.0,
+    "end": 48.0,
+    "text": "好嘅，再见！",
+    "cantonese": "好嘅，再见！",
+    "jyutping": "hou2 ge3, zoi3 gin3!",
+    "mandarin": "好的，再见！",
+    "english": "OK, goodbye!",
+    "translation": "OK, goodbye!",
+    "tone": "道别",
+    "scene": "告别",
+    "notes": [
+      { "word": "嘅", "meaning": "的（语气助词）", "type": "语气词" },
+      { "word": "再见", "meaning": "再见", "type": "告别" }
+    ]
+  },
+  {
+    "id": 11,
+    "start": 48.5,
+    "end": 51.5,
+    "text": "拜拜！",
+    "cantonese": "拜拜！",
+    "jyutping": "baai1 baai3!",
+    "mandarin": "拜拜！",
+    "english": "Bye-bye!",
+    "translation": "Bye-bye!",
+    "tone": "轻松道别",
+    "scene": "离开",
+    "notes": [
+      { "word": "拜拜", "meaning": "拜拜（来自英语的 bye-bye）", "type": "外来语" }
+    ]
+  }
+]

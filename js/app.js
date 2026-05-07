@@ -4,6 +4,9 @@
 
 // Global Alpine.js initialization and shared state
 document.addEventListener('alpine:init', () => {
+  // ---------- i18n helper ----------
+  Alpine.magic('t', () => (key) => t(key));
+
   // ---------- Global user state (available on all pages) ----------
   Alpine.store('user', {
     loggedIn: false,

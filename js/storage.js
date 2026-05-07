@@ -139,6 +139,24 @@ const Storage = {
     return stats;
   },
 
+  // ---------- Watch Progress ----------
+  getProgress(videoId) {
+    const all = this.get('progress', {});
+    return all[videoId] || { index: 0, total: 0, updatedAt: null };
+  },
+
+  saveProgress(videoId, index, total) {
+    const all = this.get('progress', {});
+    all[videoId] = { index, total, updatedAt: new Date().toISOString() };
+    this.set('progress', all);
+    // Also save last watched for quick resume
+    this.set('last_watched', { videoId, index, total, updatedAt: all[videoId].updatedAt });
+  },
+
+  getLastWatched() {
+    return this.get('last_watched', null);
+  },
+
   // ---------- Settings ----------
   getSettings() {
     return this.get('settings', {

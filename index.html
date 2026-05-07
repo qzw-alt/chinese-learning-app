@@ -37,36 +37,68 @@
       </div>
     </div>
 
+    <!-- Continue Learning -->
+    <div x-show="lastWatchedVideo" class="continue-card" @click="goTo('watch.html?id=' + lastWatchedVideo.id)">
+      <div class="continue-thumb">
+        <img :src="lastWatchedVideo.thumbnail || (lastWatchedVideo.sourceId ? 'https://img.youtube.com/vi/' + lastWatchedVideo.sourceId + '/mqdefault.jpg' : '')"
+          :alt="lastWatchedVideo.title" loading="lazy"
+          @error="$el.parentElement.classList.add('no-thumb')">
+      </div>
+      <div class="continue-info">
+        <div class="continue-label">📌 继续学习</div>
+        <div class="continue-title" x-text="lastWatchedVideo.title"></div>
+        <div class="continue-progress">
+          <div class="progress-bar"><div class="progress-fill" :style="'width:' + lastWatchedPercent + '%'"></div></div>
+          <span x-text="'已学 ' + lastWatchedProgress.index + '/' + lastWatchedProgress.total + ' 句'"></span>
+        </div>
+      </div>
+      <div class="continue-arrow">▶</div>
+    </div>
+
     <!-- Search -->
     <div class="search-row">
-      <input type="text" class="search-box" x-model="searchQuery" placeholder="搜索视频标题、描述...">
+      <input type="text" class="search-box" x-model="searchQuery" :placeholder="t('searchPlaceholder')">
+    </div>
+
+    <!-- Quick Tags -->
+    <div class="quick-tags" x-show="!loading">
+      <button class="quick-tag" @click="searchQuery = '问候'">#问候</button>
+      <button class="quick-tag" @click="searchQuery = '点餐'">#点餐</button>
+      <button class="quick-tag" @click="searchQuery = '问路'">#问路</button>
+      <button class="quick-tag" @click="searchQuery = '购物'">#购物</button>
+      <button class="quick-tag" @click="searchQuery = '天气'">#天气</button>
+      <button class="quick-tag" @click="searchQuery = '面试'">#面试</button>
     </div>
 
     <!-- Filter Bar: Language -->
     <div class="filter-section">
-      <span class="filter-label">语言</span>
+      <span class="filter-label" x-text="t('all')">Lang</span>
       <div class="filter-bar">
-        <button class="filter-btn" :class="{ active: langFilter === 'all' }" @click="langFilter = 'all'">全部</button>
-        <button class="filter-btn" :class="{ active: langFilter === 'mandarin' }" @click="langFilter = 'mandarin'">普通话</button>
-        <button class="filter-btn" :class="{ active: langFilter === 'cantonese' }" @click="langFilter = 'cantonese'">粤语</button>
+        <button class="filter-btn" :class="{ active: langFilter === 'all' }" @click="langFilter = 'all'" x-text="t('all')">All</button>
+        <button class="filter-btn" :class="{ active: langFilter === 'mandarin' }" @click="langFilter = 'mandarin'" x-text="t('mandarin')">Mandarin</button>
+        <button class="filter-btn" :class="{ active: langFilter === 'cantonese' }" @click="langFilter = 'cantonese'" x-text="t('cantonese')">Cantonese</button>
       </div>
     </div>
 
     <!-- Filter Bar: Difficulty -->
     <div class="filter-section">
-      <span class="filter-label">难度</span>
+      <span class="filter-label">Lvl</span>
       <div class="filter-bar">
-        <button class="filter-btn" :class="{ active: diffFilter === 'all' }" @click="diffFilter = 'all'">全部</button>
-        <button class="filter-btn" :class="{ active: diffFilter === 'beginner' }" @click="diffFilter = 'beginner'">初级</button>
-        <button class="filter-btn" :class="{ active: diffFilter === 'intermediate' }" @click="diffFilter = 'intermediate'">中级</button>
-        <button class="filter-btn" :class="{ active: diffFilter === 'advanced' }" @click="diffFilter = 'advanced'">高级</button>
+        <button class="filter-btn" :class="{ active: diffFilter === 'all' }" @click="diffFilter = 'all'" x-text="t('all')">All</button>
+        <button class="filter-btn" :class="{ active: diffFilter === 'beginner' }" @click="diffFilter = 'beginner'" x-text="t('beginner')">Beginner</button>
+        <button class="filter-btn" :class="{ active: diffFilter === 'intermediate' }" @click="diffFilter = 'intermediate'" x-text="t('intermediate')">Intermediate</button>
+        <button class="filter-btn" :class="{ active: diffFilter === 'advanced' }" @click="diffFilter = 'advanced'" x-text="t('advanced')">Advanced</button>
       </div>
     </div>
 
     <!-- Result Summary -->
     <div class="result-summary" x-show="!loading">
       <span x-text="resultText"></span>
-      <button x-show="langFilter !== 'all' || diffFilter !== 'all' || searchQuery" class="btn btn-sm btn-outline" @click="clearFilters()">清除筛选</button>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button x-show="!showComingSoon" class="btn btn-sm btn-outline" style="color:var(--text-secondary);border-color:var(--border);" @click="showComingSoon = true" x-text="t('showComingSoon') + ' (+' + videos.filter(v=>v.comingSoon).length + ')'">Show Upcoming</button>
+        <button x-show="showComingSoon" class="btn btn-sm btn-outline" style="color:var(--warning);border-color:var(--warning);" @click="showComingSoon = false" x-text="t('hideComingSoon')">Hide Upcoming</button>
+        <button x-show="langFilter !== 'all' || diffFilter !== 'all' || searchQuery" class="btn btn-sm btn-outline" @click="clearFilters()" x-text="t('clearFilters')">Clear</button>
+      </div>
     </div>
 
     <!-- Loading -->
@@ -79,11 +111,11 @@
     <div class="video-grid" x-show="!loading && filtered.length > 0">
       <template x-for="v in filtered" :key="v.id">
         <div class="card video-card" :class="{ 'coming-soon': v.comingSoon }" @click="goTo('watch.html?id=' + v.id)">
-          <div class="card-img-wrapper">
-            <img class="card-img"
+          <div class="card-img-wrapper" :class="{ 'no-thumb': v._thumbFailed }">
+            <img class="card-img" x-show="!v._thumbFailed"
               :src="v.thumbnail || (v.sourceId ? 'https://img.youtube.com/vi/' + v.sourceId + '/hqdefault.jpg' : '')"
               :alt="v.title" loading="lazy"
-              @error="v.thumbnail = null; $el.src = ''; $el.parentElement.classList.add('no-thumb')">
+              @error="if (!v._thumbTriedMq) { v._thumbTriedMq = true; $el.src = 'https://img.youtube.com/vi/' + v.sourceId + '/mqdefault.jpg'; } else { v._thumbFailed = true; }">
             <div class="card-img-tag tag" :class="'tag-' + v.language" x-text="v.language === 'cantonese' ? '粤' : '普'"></div>
             <div class="card-duration" x-text="v.duration"></div>
             <div class="coming-soon-overlay" x-show="v.comingSoon">
@@ -104,18 +136,18 @@
   </div>
 
   <!-- Bottom Tab Bar -->
-  <nav class="tab-bar">
+  <nav class="tab-bar" x-data x-init="$el.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n)})">
     <a class="tab-item active" href="index.html">
-      <span class="tab-icon">🏠</span>首页
+      <span class="tab-icon">🏠</span><span data-i18n="home">首页</span>
     </a>
     <a class="tab-item" href="vocabulary.html">
-      <span class="tab-icon">📖</span>生词
+      <span class="tab-icon">📖</span><span data-i18n="vocab">生词</span>
     </a>
     <a class="tab-item" href="daily.html">
-      <span class="tab-icon">🗣️</span>每日
+      <span class="tab-icon">🗣️</span><span data-i18n="daily">每日</span>
     </a>
     <a class="tab-item" href="profile.html">
-      <span class="tab-icon">👤</span>我的
+      <span class="tab-icon">👤</span><span data-i18n="profile">我的</span>
     </a>
   </nav>
 
@@ -133,6 +165,7 @@
         searchQuery: '',
         langFilter: 'all',
         diffFilter: 'all',
+        showComingSoon: false,
         loading: true,
 
         async init() {
@@ -141,8 +174,29 @@
           Alpine.store('user').init();
         },
 
+        get lastWatchedProgress() {
+          const lw = Storage.getLastWatched();
+          if (!lw) return null;
+          return lw;
+        },
+
+        get lastWatchedVideo() {
+          const lw = Storage.getLastWatched();
+          if (!lw) return null;
+          return this.videos.find(v => v.id === lw.videoId) || null;
+        },
+
+        get lastWatchedPercent() {
+          const p = this.lastWatchedProgress;
+          if (!p || !p.total) return 0;
+          return Math.round((p.index / (p.total - 1)) * 100);
+        },
+
         get filtered() {
           let list = this.videos;
+          if (!this.showComingSoon) {
+            list = list.filter(v => !v.comingSoon);
+          }
           if (this.langFilter !== 'all') {
             list = list.filter(v => v.language === this.langFilter);
           }
@@ -172,12 +226,14 @@
         },
 
         get resultText() {
+          const available = this.videos.filter(v => !v.comingSoon).length;
           const total = this.videos.length;
           const showing = this.filtered.length;
+          const suffix = this.showComingSoon ? `（含 ${total - available} 个筹备中）` : '';
           if (this.langFilter === 'all' && this.diffFilter === 'all' && !this.searchQuery) {
-            return `共 ${total} 个视频`;
+            return `共 ${showing} 个视频${suffix}`;
           }
-          return `找到 ${showing} 个视频（共 ${total} 个）`;
+          return `找到 ${showing} 个视频`;
         },
 
         diffLabel(d) {

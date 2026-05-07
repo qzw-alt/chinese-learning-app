@@ -59,6 +59,10 @@
 
       <!-- Active line learning panel -->
       <section class="line-study-panel" x-show="activeSub">
+        <div style="width:100%;height:4px;background:var(--border);border-radius:2px;margin-bottom:12px;overflow:hidden;">
+          <div style="height:100%;background:var(--primary);border-radius:2px;transition:width 0.3s ease;"
+            :style="'width:' + ((activeIndex + 1) / subtitles.length * 100) + '%'"></div>
+        </div>
         <div class="line-study-meta">
           <span class="tag" :class="'tag-' + (video?.language || '')" x-text="video?.language === 'cantonese' ? '粤语主课' : '普通话主课'"></span>
           <span x-text="video?.scene || activeSub?.scene || '港片场景'"></span>
@@ -88,16 +92,20 @@
         </div>
 
         <div class="line-actions">
-          <button class="btn btn-secondary" @click="playActiveClip">重播本句</button>
-          <button class="btn btn-outline" @click="setClipSpeed(0.75)">慢速</button>
-          <button class="btn btn-primary" @click="openSpeak(activeSub)">跟读</button>
-          <button class="btn btn-secondary" @click="saveActiveLine">收藏整句</button>
+          <button class="btn btn-secondary" @click="playActiveClip" x-text="t('replay')">重播本句</button>
+          <button class="btn btn-outline" @click="setClipSpeed(0.75)" x-text="t('slow')">慢速</button>
+          <button class="btn btn-primary" @click="openSpeak(activeSub)" x-text="t('speak')">跟读</button>
+          <button class="btn btn-secondary" @click="saveActiveLine" x-text="t('save')">收藏整句</button>
         </div>
 
         <div class="line-nav">
-          <button class="btn btn-sm btn-outline" @click="jumpRelative(-1)">上一句</button>
+          <button class="btn btn-sm btn-outline" @click="jumpRelative(-1)" x-text="t('prev')">上一句</button>
           <span x-text="(activeIndex + 1) + ' / ' + subtitles.length"></span>
-          <button class="btn btn-sm btn-outline" @click="jumpRelative(1)">下一句</button>
+          <button class="btn btn-sm btn-outline" @click="jumpRelative(1)" x-text="t('next')">下一句</button>
+        </div>
+
+        <div style="text-align:center;margin-top:16px;">
+          <button class="btn btn-primary" style="width:100%;max-width:280px;" @click="checkIn" x-text="'✅ ' + t('checkIn')">✅ 完成学习，今日打卡</button>
         </div>
       </section>
 
@@ -235,6 +243,8 @@
           if (!sub) return;
           this.activeSub = sub;
           this.activeIndex = this.subtitles.findIndex(s => s.id === sub.id);
+          // Save progress
+          Storage.saveProgress(this.video.id, this.activeIndex, this.subtitles.length);
         },
 
         playActiveClip() {
@@ -254,6 +264,13 @@
           this.setActiveSub(next);
           this.playerCtrl?.seek(next.start);
           this.playerCtrl?.play();
+          // Celebrate on finishing last sentence
+          if (delta > 0 && nextIndex === this.subtitles.length - 1) {
+            setTimeout(() => {
+              showToast('🎉 ' + (t('checkedIn') || 'All sentences completed!'));
+              Alpine.store('user').earnBadge('video_10');
+            }, 800);
+          }
         },
 
         saveExpression(note) {
